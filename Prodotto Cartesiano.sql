@@ -13,10 +13,6 @@ CREATE INDEX idx_t2_s3 ON t2 USING GIST (s3);
 CREATE INDEX idx_t1_d3 ON t1 USING GIST (d3);
 CREATE INDEX idx_t2_d3 ON t2 USING GIST (d3);
 
-CREATE INDEX idx_t5_s1 ON t5 USING GIST (s1);
-CREATE INDEX idx_t6_s1 ON t6 USING GIST (s1);
-CREATE INDEX idx_t5_d1 ON t5 USING GIST (d1);
-CREATE INDEX idx_t6_d1 ON t6 USING GIST (d1);
 
 /* CON PYRAMID INTERSECT
 CREATE OR REPLACE FUNCTION pyramid_intersect(
@@ -45,12 +41,6 @@ where t1.s1 && t2.s1 and t1.d1 && t2.d1
 select t1.Attr1, t2.Attr1, t1.Attr2 , t2.Attr2, t1.s1 * t2.s1 , t1.d1 * t2.d1, t1.s2 * t2.s2 , t1.d2 * t2.d2, t1.s3 * t2.s3 , t1.d3 * t2.d3
 from t1, t2 
 where t1.s1 && t2.s1 and t1.d1 && t2.d1
-
-/* SENZA PREFERENZE 
-select t5.Attr1, t6.Attr1, t5.Attr2 , t6.Attr2, t5.s1 * t6.s1 , t5.d1 * t6.d1
-from t5, t6 
-where t5.s1 && t6.s1 and t5.d1 && t6.d1
-*/
 
   
   
