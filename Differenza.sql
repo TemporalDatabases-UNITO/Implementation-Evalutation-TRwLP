@@ -1,7 +1,7 @@
 select reset();
-select POPOLAMENTO(100000, 0, 0.2);
+select POPOLAMENTO(100000, 0.1, 0.2);
 -- Funzione che crea un int4range gestendo il caso empty
-CREATE OR REPLACE FUNCTION safe_int4range(lower_bound INT, upper_bound INT, bounds TEXT) RETURNS int4range AS $$
+CREATE OR REPLACE FUNCTION safe_int4range(lower_bound integer, upper_bound integer, bounds TEXT) RETURNS int4range AS $$
   BEGIN
     IF lower_bound >= upper_bound THEN
       RETURN 'empty'::int4range;
@@ -61,10 +61,9 @@ IF isempty(t2_s1) and isempty(t2_d1) and isempty(t2_s2) and isempty(t2_d2) and  
 
 -- Caso intersezione tra V1 e V2
 ELSE 
-
 -- Confronto con lo strato con priorità minore di V2 non vuoto
-	IF isempty(t2_s1) and isempty(t2_d1) THEN
-		IF isempty(t2_s2) and isempty(t2_d2) THEN
+	IF isempty(t2_s1) or isempty(t2_d1) THEN
+		IF isempty(t2_s2) or isempty(t2_d2) THEN
 			ret1 =  sub_1_m(t1_s1, t1_d1 , t2_s3, t2_d3);
 			ret2 =  sub_1_m(t1_s2, t1_d2 , t2_s3, t2_d3);
 			ret3 =  sub_1_m(t1_s3, t1_d3 , t2_s3, t2_d3);
@@ -114,7 +113,8 @@ with t as (
   from t1 join t2 on (t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2) CROSS JOIN LATERAL sub_n_m(t1.s1, t1.d1, t1.s2, t1.d2, t1.s3, t1.d3 , t2.s1, t2.d1, t2.s2, t2.d2, t2.s3, t2.d3)  as quadr
   where (not isempty(quadr.s1) AND not isempty(quadr.d1)) OR  (not isempty(quadr.s2) AND not isempty(quadr.d2)) OR (not isempty(quadr.s3) AND not isempty(quadr.d3)))
 select * from (
-	select Attr1, Attr2, s1, d1, s2, d2, s3, d3 from t 
+	select Attr1, Attr2, s1, d1, s2, d2, s3, d3 
+	from t 
 	union
 	select Attr1, Attr2, s1 , d1, s2 , d2, s3 , d3
 	from t1 where not exists (select * from t2 where t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2))
