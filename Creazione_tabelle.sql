@@ -25,6 +25,36 @@ CREATE TABLE t2 (
 	d3 int4range
 );
 
+DROP TABLE IF EXISTS t2;
+CREATE TABLE t2 (
+	Attr1 varchar(150),
+	Attr2 varchar(150),
+	s1 int4range,
+	d1 int4range,
+	s2 int4range,
+	d2 int4range,
+	s3 int4range,
+	d3 int4range
+);
+
+DROP TABLE IF EXISTS t3;
+CREATE TABLE t3 (
+	Attr1 varchar(150),
+	Attr2 varchar(150),
+	low int[][];
+	medium int[][];
+	high int[][];
+);
+
+DROP TABLE IF EXISTS t4;
+CREATE TABLE t4 (
+	Attr1 varchar(150),
+	Attr2 varchar(150),
+	low int[][];
+	medium int[][];
+	high int[][];
+);
+
 DROP TABLE IF EXISTS t5;
 CREATE TABLE t5 (
 	Attr1 varchar(150),
@@ -181,6 +211,11 @@ countrows = 0;
 -- INSERIMENTO NELLE TABELLE
 		INSERT INTO t1 SELECT r1.*;
 		INSERT INTO t2 SELECT r2.*;
+		
+		/*
+		INSERT INTO t3 SELECT * FROM MakeExplicit(r1.Attr1, r1.Attr2, r1.s1, r1.d1, r1.s2, r1.d2, r1.s3, r1.d3);
+		INSERT INTO t4 SELECT * FROM MakeExplicit(r2.Attr1, r2.Attr2, r2.s1, r2.d1, r2.s2, r2.d2, r2.s3, r2.d3);
+		*/
 								   
 		INSERT INTO t5 SELECT r1.Attr1, r1.Attr2;
 		INSERT INTO t6 SELECT r2.Attr1, r2.Attr2;
