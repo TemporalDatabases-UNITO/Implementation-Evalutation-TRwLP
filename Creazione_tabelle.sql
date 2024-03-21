@@ -41,18 +41,18 @@ DROP TABLE IF EXISTS t3;
 CREATE TABLE t3 (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
-	low int[][];
-	medium int[][];
-	high int[][];
+	low int[][],
+	medium int[][],
+	high int[][]
 );
 
 DROP TABLE IF EXISTS t4;
 CREATE TABLE t4 (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
-	low int[][];
-	medium int[][];
-	high int[][];
+	low int[][],
+	medium int[][],
+	high int[][]
 );
 
 DROP TABLE IF EXISTS t5;
@@ -135,31 +135,31 @@ countrows = 0;
 
 		IF countrows < numrows*tempintersect THEN --le quadruple si devono intersecare
 		--QUADRUPLA 1 PRIMA TABELLA
-		a = 100; b = 200;
+		a = 50; b = 75;
 		smin = floor(random()*(b-a+1))+a;
-		a = 301; b = 400;
+		a = 100; b = 125;
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
-		a = 50; b = 150;
+		a = 60; b = 85;
 		smin = floor(random()*(b-a+1))+a;
-		a = 251; b = 350;
+		a = 110; b = 135;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 401; b = 500;
+		a = 150; b = 175;
 		smin = floor(random()*(b-a+1))+a;
-		a = 601; b = 700;
+		a = 200; b = 225;
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 701; b = 800;
+		a = 250; b = 275;
 		smin = floor(random()*(b-a+1))+a;
-		a = 901; b = 1000;
+		a = 300; b = 325;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
@@ -167,7 +167,7 @@ countrows = 0;
 		
 		END IF;
 		-- QUADRUPLA 2 PRIMA TABELLA
-		a = 10; b = 25;
+		a = 5; b = 10;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs ( upper(r1.s1) - (floor(random()*(b-a+1))+a));
 		a = 1; b = 2;
@@ -178,18 +178,22 @@ countrows = 0;
 					
 
 		-- QUADRUPLA 3 PRIMA TABELLA
-		a = 20; b = 40;
+		a = 10; b = 20;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
 		a = 2; b = 3;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
+		IF smin > smax THEN
+		r1.s3 = int4range(smax,smin, '[]');
+		ELSE 
 		r1.s3 = int4range(smin,smax, '[]');
+		END IF;
 		r1.d3 = int4range(dmin,dmax, '[]');
 	
 	
 		-- QUADRUPLA 2 SECONDA TABELLA
-		a =  10; b = 20;
+		a =  5; b = 10;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
 		a = 1; b = 2;
@@ -199,23 +203,25 @@ countrows = 0;
 		r2.d2 = int4range(dmin,dmax, '[]');
 	
 		-- QUADRUPLA 3 SECONDA TABELLA
-		a = 20; b = 40;
+		a = 10; b = 20;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
 		a = 2; b = 3;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
 		r2.d3 = int4range(dmin,dmax, '[]');
+		IF smin > smax THEN
+		r2.s3 = int4range(smax,smin, '[]');		
+		ELSE
 		r2.s3 = int4range(smin,smax, '[]');		
+		END IF;
 
 -- INSERIMENTO NELLE TABELLE
 		INSERT INTO t1 SELECT r1.*;
 		INSERT INTO t2 SELECT r2.*;
 		
-		/*
 		INSERT INTO t3 SELECT * FROM MakeExplicit(r1.Attr1, r1.Attr2, r1.s1, r1.d1, r1.s2, r1.d2, r1.s3, r1.d3);
 		INSERT INTO t4 SELECT * FROM MakeExplicit(r2.Attr1, r2.Attr2, r2.s1, r2.d1, r2.s2, r2.d2, r2.s3, r2.d3);
-		*/
 								   
 		INSERT INTO t5 SELECT r1.Attr1, r1.Attr2;
 		INSERT INTO t6 SELECT r2.Attr1, r2.Attr2;
@@ -224,4 +230,6 @@ countrows = 0;
 END; $$
 LANGUAGE plpgsql;
 
-select POPOLAMENTO(2500, 0.1, 0.2);
+select POPOLAMENTO(10000, 0.1, 0.2);
+
+
