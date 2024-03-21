@@ -1,5 +1,5 @@
-select reset();
-select POPOLAMENTO(100000, 0.1, 0.2);
+/*select reset();
+select POPOLAMENTO(100000, 0.1, 0.2);*/
 -- Funzione che crea un int4range gestendo il caso empty
 CREATE OR REPLACE FUNCTION safe_int4range(lower_bound integer, upper_bound integer, bounds TEXT) RETURNS int4range AS $$
   BEGIN
@@ -61,22 +61,10 @@ IF isempty(t2_s1) and isempty(t2_d1) and isempty(t2_s2) and isempty(t2_d2) and  
 
 -- Caso intersezione tra V1 e V2
 ELSE 
--- Confronto con lo strato con priorità minore di V2 non vuoto
-	IF isempty(t2_s1) or isempty(t2_d1) THEN
-		IF isempty(t2_s2) or isempty(t2_d2) THEN
-			ret1 =  sub_1_m(t1_s1, t1_d1 , t2_s3, t2_d3);
-			ret2 =  sub_1_m(t1_s2, t1_d2 , t2_s3, t2_d3);
-			ret3 =  sub_1_m(t1_s3, t1_d3 , t2_s3, t2_d3);
-		ELSE
-			ret1 =  sub_1_m(t1_s1, t1_d1 , t2_s2, t2_d2);
-			ret2 =  sub_1_m(t1_s2, t1_d2 , t2_s2, t2_d2);
-			ret3 =  sub_1_m(t1_s3, t1_d3 , t2_s2, t2_d2);
-		END IF;
-	ELSE
+-- Confronto con lo il primo strato di V2
 		ret1 =  sub_1_m(t1_s1, t1_d1 , t2_s1, t2_d1);
 		ret2 =  sub_1_m(t1_s2, t1_d2 , t2_s1, t2_d1);
 		ret3 =  sub_1_m(t1_s3, t1_d3 , t2_s1, t2_d1);
-	END IF;
 
 -- Rimozione di start o duration quando la corrispondente duration o start è empty
 	FOR i in 1..4 LOOP
@@ -106,8 +94,18 @@ END IF;
 END; $$
 LANGUAGE plpgsql;
 
-
-
+CREATE OR REPLACE FUNCTION differenza()
+RETURNS TABLE(
+  Attr1_diff varchar(150),
+  Attr2_diff varchar(150),
+  s1_diff int4range,
+  d1_diff int4range,
+  s2_diff int4range,
+  d2_diff int4range,
+  s3_diff int4range,
+  d3_diff int4range ) AS $$
+BEGIN
+RETURN QUERY
 with t as (
   select t1.Attr1, t1.Attr2, quadr.s1 , quadr.d1, quadr.s2 , quadr.d2 , quadr.s3 , quadr.d3
   from t1 join t2 on (t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2) CROSS JOIN LATERAL sub_n_m(t1.s1, t1.d1, t1.s2, t1.d2, t1.s3, t1.d3 , t2.s1, t2.d1, t2.s2, t2.d2, t2.s3, t2.d3)  as quadr
@@ -117,7 +115,12 @@ select * from (
 	from t 
 	union
 	select Attr1, Attr2, s1 , d1, s2 , d2, s3 , d3
-	from t1 where not exists (select * from t2 where t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2))
+	from t1 where not exists (select * from t2 where t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2));
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT * FROM differenza();
 
 
 
