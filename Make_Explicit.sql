@@ -1,10 +1,14 @@
+/*CREATE TYPE pair AS (
+s int,
+d int
+);*/
 
 CREATE OR REPLACE FUNCTION Ext(s int4range, d int4range)
-RETURNS int[][] AS
+RETURNS pair[] AS
 $$
-DECLARE result int[][];
+DECLARE result pair[];
 BEGIN
-  SELECT array_agg(ARRAY[s_val, d_val])
+  SELECT array_agg((s_val, d_val))
   INTO result
   FROM generate_series(lower(s), upper(s) - 1) AS s_val,
        generate_series(lower(d), upper(d) - 1) AS d_val;
@@ -25,9 +29,9 @@ CREATE OR REPLACE FUNCTION MakeExplicit(
 RETURNS TABLE(
     Attr1 varchar(150),
     Attr2 varchar(150),
-    low int[][],
-    medium int[][],
-    high int[][]
+    low pair[],
+    medium pair[],
+    high pair[]
 ) AS
 $$
 BEGIN
