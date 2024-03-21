@@ -1,15 +1,13 @@
 
-CREATE OR REPLACE FUNCTION Ext(range1 int4range, range2 int4range)
+CREATE OR REPLACE FUNCTION Ext(s int4range, d int4range)
 RETURNS int[][] AS
 $$
-DECLARE
-  result int[][];
+DECLARE result int[][];
 BEGIN
-  SELECT array_agg(ARRAY[g1.val, g2.val])
+  SELECT array_agg(ARRAY[s_val, d_val])
   INTO result
-  FROM generate_series(lower(range1), upper(range1) - 1) AS g1(val),
-       generate_series(lower(range2), upper(range2) - 1) AS g2(val);
-
+  FROM generate_series(lower(s), upper(s) - 1) AS s_val,
+       generate_series(lower(d), upper(d) - 1) AS d_val;
   RETURN result;
 END
 $$ LANGUAGE plpgsql;
