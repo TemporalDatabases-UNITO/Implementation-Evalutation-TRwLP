@@ -41,18 +41,18 @@ DROP TABLE IF EXISTS t3;
 CREATE TABLE t3 (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
-	low int[][],
-	medium int[][],
-	high int[][]
+	low pair[],
+	medium pair[],
+	high pair[]
 );
 
 DROP TABLE IF EXISTS t4;
 CREATE TABLE t4 (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
-	low int[][],
-	medium int[][],
-	high int[][]
+	low pair[],
+	medium pair[],
+	high pair[]
 );
 
 DROP TABLE IF EXISTS t5;
@@ -230,6 +230,6 @@ countrows = 0;
 END; $$
 LANGUAGE plpgsql;
 
-select POPOLAMENTO(10000, 0.1, 0.2);
+select POPOLAMENTO(1000, 0.1, 0.2);
 
 
