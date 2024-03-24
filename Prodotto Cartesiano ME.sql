@@ -1,27 +1,23 @@
-select reset();
-select POPOLAMENTO(100, 0.1, 0.1);
+CREATE INDEX idx_gin_t3_low ON t3 USING gin (low);
+CREATE INDEX idx_gin_t4_low ON t4 USING gin (low);
+
+CREATE INDEX idx_gin_t3_medium ON t3 USING gin (medium);
+CREATE INDEX idx_gin_t4_medium ON t4 USING gin (medium);
+
+CREATE INDEX idx_gin_t3_high ON t3 USING gin (high);
+CREATE INDEX idx_gin_t4_high ON t4 USING gin (high);
 
 CREATE OR REPLACE FUNCTION array_intersection(t3 pair[], t4 pair[]) RETURNS pair[]
 AS $$
-DECLARE ret pair[];
 BEGIN
-    IF t3 IS NULL OR t4 IS NULL OR array_length(t3,1) = 0  OR array_length(t4,1) = 0 THEN
-		RETURN '{}';
-	ELSE 
-		SELECT ARRAY_AGG(e) INTO ret
-		FROM(
-		SELECT UNNEST(t3)
+    RETURN ARRAY(
+        SELECT UNNEST(t3)
         INTERSECT
         SELECT UNNEST(t4)
-		) AS dt(e);
-	IF ret IS NULL THEN
-		RETURN '{}';
-	ELSE 
-		RETURN ret;
-	END IF;
-	END IF;
+    );
 END;
-$$ language plpgsql;
+$$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION prodotto_cartesiano_ME()
 RETURNS TABLE(
