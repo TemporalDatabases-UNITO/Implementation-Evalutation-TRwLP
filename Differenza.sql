@@ -1,5 +1,5 @@
 /*select reset();
-select POPOLAMENTO(100000, 0.1, 0.2);*/
+select POPOLAMENTO(100000, 0.1, 0.2,1);*/
 -- Funzione che crea un int4range gestendo il caso empty
 CREATE OR REPLACE FUNCTION safe_int4range(lower_bound integer, upper_bound integer, bounds TEXT) RETURNS int4range AS $$
   BEGIN
