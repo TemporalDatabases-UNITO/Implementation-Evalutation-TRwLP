@@ -85,7 +85,7 @@ AS $$
 $$;
 SELECT RESET();
 
-CREATE OR REPLACE FUNCTION POPOLAMENTO(numrows decimal, nontempintersect decimal, tempintersect decimal) 
+CREATE OR REPLACE FUNCTION POPOLAMENTO(numrows decimal, nontempintersect decimal, tempintersect decimal, interval_s decimal) 
 RETURNS VOID AS $$
 DECLARE r1 t1%rowtype;
 DECLARE r2 t2%rowtype;
@@ -102,6 +102,9 @@ BEGIN
 set seed to 0.35;
 start = clock_timestamp();
 countrows = 0;
+IF interval_s <= 0 THEN
+interval_s = 1;
+END IF;
 	LOOP 
 	EXIT WHEN countrows>=numrows;
 		countrows = countrows+1;
@@ -116,18 +119,18 @@ countrows = 0;
 		END IF;
 		
 		-- DURATA QUADRUPLA 1 PRIMA TABELLA
-		a = 1; b = 10;
+		a = 1; b = 5;
 		dmin = floor(random()*(b-a+1))+a;
-		a = 21; b = 30;
+		a = 6; b = 10;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r1.d1 = int4range(dmin, dmax, '[]');
 
 		
 		-- DURATA QUADRUPLA 1 SECONDA TABELLA
-		a = 1; b = 10;                
+		a = 1; b = 5;                
 		dmin = floor(random()*(b-a+1))+a;
-		a = 21; b = 30;
+		a = 6; b = 10;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r2.d1 = int4range(dmin, dmax, '[]');
@@ -135,31 +138,31 @@ countrows = 0;
 
 		IF countrows < numrows*tempintersect THEN --le quadruple si devono intersecare
 		--QUADRUPLA 1 PRIMA TABELLA
-		a = 50; b = 75;
-		smin = floor(random()*(b-a+1))+a;
-		a = 100; b = 125;
+		a = 10 * interval_s; b = 15 * interval_s;          
+		smin = floor(random()*(b-a+1))+a; 
+		a = 16 * interval_s; b = 20 * interval_s;          
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
-		a = 60; b = 85;
+		a = 12 * interval_s ; b = 17 * interval_s;
 		smin = floor(random()*(b-a+1))+a;
-		a = 110; b = 135;
+		a = 18 * interval_s ; b = 22 * interval_s;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 150; b = 175;
-		smin = floor(random()*(b-a+1))+a;
-		a = 200; b = 225;
+		a = 30 * interval_s ; b = 35 * interval_s;        
+		smin = floor(random()*(b-a+1))+a; 
+		a = 36 * interval_s ; b = 40 * interval_s;        
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 250; b = 275;
-		smin = floor(random()*(b-a+1))+a;
-		a = 300; b = 325;
+		a = 50 * interval_s; b = 55 * interval_s;           
+		smin = floor(random()*(b-a+1))+a;               
+		a = 56 * interval_s; b = 60 * interval_s;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
@@ -167,18 +170,25 @@ countrows = 0;
 		
 		END IF;
 		-- QUADRUPLA 2 PRIMA TABELLA
-		a = 5; b = 10;
+		a = 1 * interval_s ; b = 2 * interval_s;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs ( upper(r1.s1) - (floor(random()*(b-a+1))+a));
 		a = 1; b = 2;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
 		dmax = upper(r1.d1) - (floor(random()*(b-a+1))+a);
-		r1.s2 = int4range(smin ,smax , '[]');
-		r1.d2 = int4range(dmin,dmax, '[]');				
-					
-
+		IF smin > smax THEN
+		r1.s2 = int4range(smax,smin, '[]');		
+		ELSE
+		r1.s2 = int4range(smin,smax, '[]');	
+		END IF;
+		
+		IF dmin > dmax THEN
+		r1.d2 = int4range(dmax,dmin, '[]');		
+		ELSE
+		r1.d2 = int4range(dmin,dmax, '[]');	
+		END IF;
 		-- QUADRUPLA 3 PRIMA TABELLA
-		a = 10; b = 20;
+		a = 2 * interval_s ; b = 4 * interval_s;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
 		a = 2; b = 3;
@@ -189,31 +199,48 @@ countrows = 0;
 		ELSE 
 		r1.s3 = int4range(smin,smax, '[]');
 		END IF;
+		
+		IF dmin > dmax THEN
+		r1.d3 = int4range(dmax,dmin, '[]');
+		ELSE 
 		r1.d3 = int4range(dmin,dmax, '[]');
-	
+		END IF;
 	
 		-- QUADRUPLA 2 SECONDA TABELLA
-		a =  5; b = 10;
+		a =  1* interval_s; b = 2*interval_s;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
 		a = 1; b = 2;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
-		r2.s2 = int4range(smin,smax, '[]');
-		r2.d2 = int4range(dmin,dmax, '[]');
+		IF smin > smax THEN
+		r2.s2 = int4range(smax,smin, '[]');		
+		ELSE
+		r2.s2 = int4range(smin,smax, '[]');	
+		END IF;
+		
+		IF dmin > dmax THEN
+		r2.d2 = int4range(dmax,dmin, '[]');		
+		ELSE
+		r2.d2 = int4range(dmin,dmax, '[]');	
+		END IF;
 	
 		-- QUADRUPLA 3 SECONDA TABELLA
-		a = 10; b = 20;
+		a = 2 * interval_s ; b = 4 * interval_s;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
 		a = 2; b = 3;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
-		r2.d3 = int4range(dmin,dmax, '[]');
 		IF smin > smax THEN
 		r2.s3 = int4range(smax,smin, '[]');		
 		ELSE
 		r2.s3 = int4range(smin,smax, '[]');		
+		END IF;
+		IF dmin > dmax THEN
+		r2.d3 = int4range(dmax,dmin, '[]');		
+		ELSE
+		r2.d3 = int4range(dmin,dmax, '[]');		
 		END IF;
 
 -- INSERIMENTO NELLE TABELLE
@@ -230,6 +257,6 @@ countrows = 0;
 END; $$
 LANGUAGE plpgsql;
 
-select POPOLAMENTO(1000, 0.1, 0.2);
+select POPOLAMENTO(25000, 0.1, 0.2,1);
 
 
