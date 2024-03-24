@@ -1,14 +1,15 @@
 select reset();
-select POPOLAMENTO(1000, 1, 0.1);
+select POPOLAMENTO(1000, 0.1, 0.1,1);
 
 /* NON MANTIENE ORDINE MA PIU' EFFICIENTE*/
 CREATE OR REPLACE FUNCTION array_difference(t3 pair[], t4 pair[]) RETURNS pair[] AS $$
 DECLARE ret pair[];
 BEGIN
     SELECT ARRAY_AGG(e) INTO ret
-		FROM( SELECT UNNEST(t3)
-          EXCEPT
-          SELECT UNNEST(t4)
+		FROM(
+		SELECT UNNEST(t3)
+        EXCEPT
+        SELECT UNNEST(t4)
 		) AS dt(e);
    RETURN ret;
 END;
