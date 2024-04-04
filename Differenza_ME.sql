@@ -36,7 +36,7 @@ RETURNS TABLE(
 BEGIN
 RETURN QUERY
 with t as (
-  select t3.Attr1, t3.Attr2, array_difference(t3.low,t4.low) as low_d, array_difference(t3.medium,t4.medium) as medium_d, array_difference(t3.high,t4.high) as high_d
+  select t3.Attr1, t3.Attr2, array_difference(t3.low,t4.low) as low_d, array_difference(t3.medium,t4.low) as medium_d, array_difference(t3.high,t4.low) as high_d
   from t3 join t4 on (t3.Attr1 = t4.Attr1 and t3.Attr2 = t4.Attr2)     
   where not (array_difference(t3.low,t4.low)  = '{}'))
 select * from (
