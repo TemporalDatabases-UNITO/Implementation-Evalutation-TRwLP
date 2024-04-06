@@ -1,5 +1,3 @@
-/*select reset();
-select POPOLAMENTO(100000, 0.1, 0.2,1);*/
 -- Funzione che crea un int4range gestendo il caso empty
 CREATE OR REPLACE FUNCTION safe_int4range(lower_bound integer, upper_bound integer, bounds TEXT) RETURNS int4range AS $$
   BEGIN
@@ -107,15 +105,15 @@ RETURNS TABLE(
 BEGIN
 RETURN QUERY
 with t as (
-  select t1.Attr1, t1.Attr2, quadr.s1 , quadr.d1, quadr.s2 , quadr.d2 , quadr.s3 , quadr.d3
-  from t1 join t2 on (t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2) CROSS JOIN LATERAL sub_n_m(t1.s1, t1.d1, t1.s2, t1.d2, t1.s3, t1.d3 , t2.s1, t2.d1, t2.s2, t2.d2, t2.s3, t2.d3)  as quadr
+  select t1_im.Attr1, t1_im.Attr2, quadr.s1 , quadr.d1, quadr.s2 , quadr.d2 , quadr.s3 , quadr.d3
+  from t1_im join t2_im on (t1_im.Attr1 = t2_im.Attr1 and t1_im.Attr2 = t2_im.Attr2) CROSS JOIN LATERAL sub_n_m(t1_im.s1, t1_im.d1, t1_im.s2, t1_im.d2, t1_im.s3, t1_im.d3 , t2_im.s1, t2_im.d1, t2_im.s2, t2_im.d2, t2_im.s3, t2_im.d3)  as quadr
   where (not isempty(quadr.s1) AND not isempty(quadr.d1)) OR  (not isempty(quadr.s2) AND not isempty(quadr.d2)) OR (not isempty(quadr.s3) AND not isempty(quadr.d3)))
 select * from (
 	select Attr1, Attr2, s1, d1, s2, d2, s3, d3 
 	from t 
 	union
 	select Attr1, Attr2, s1 , d1, s2 , d2, s3 , d3
-	from t1 where not exists (select * from t2 where t1.Attr1 = t2.Attr1 and t1.Attr2 = t2.Attr2));
+	from t1_im where not exists (select * from t2_im where t1_im.Attr1 = t2_im.Attr1 and t1_im.Attr2 = t2_im.Attr2));
 END;
 $$
 LANGUAGE plpgsql;

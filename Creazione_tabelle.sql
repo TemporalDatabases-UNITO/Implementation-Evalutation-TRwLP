@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION RESET() RETURNS VOID AS $$
 BEGIN
 
-DROP TABLE IF EXISTS t1;
-CREATE TABLE t1 (
+DROP TABLE IF EXISTS t1_im;
+CREATE TABLE t1_im (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
 	s1 int4range,
@@ -13,8 +13,8 @@ CREATE TABLE t1 (
 	d3 int4range
 );
 
-DROP TABLE IF EXISTS t2;
-CREATE TABLE t2 (
+DROP TABLE IF EXISTS t2_im;
+CREATE TABLE t2_im (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
 	s1 int4range,
@@ -25,20 +25,8 @@ CREATE TABLE t2 (
 	d3 int4range
 );
 
-DROP TABLE IF EXISTS t2;
-CREATE TABLE t2 (
-	Attr1 varchar(150),
-	Attr2 varchar(150),
-	s1 int4range,
-	d1 int4range,
-	s2 int4range,
-	d2 int4range,
-	s3 int4range,
-	d3 int4range
-);
-
-DROP TABLE IF EXISTS t3;
-CREATE TABLE t3 (
+DROP TABLE IF EXISTS t1_me;
+CREATE TABLE t1_me (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
 	low pair[],
@@ -46,8 +34,8 @@ CREATE TABLE t3 (
 	high pair[]
 );
 
-DROP TABLE IF EXISTS t4;
-CREATE TABLE t4 (
+DROP TABLE IF EXISTS t2_me;
+CREATE TABLE t2_me (
 	Attr1 varchar(150),
 	Attr2 varchar(150),
 	low pair[],
@@ -85,10 +73,10 @@ AS $$
 $$;
 SELECT RESET();
 
-CREATE OR REPLACE FUNCTION POPOLAMENTO(numrows decimal, nontempintersect decimal, tempintersect decimal, interval_s decimal) 
+CREATE OR REPLACE FUNCTION POPOLAMENTO(numrows decimal, nontempintersect decimal, tempintersect decimal, interval_mul decimal) 
 RETURNS VOID AS $$
-DECLARE r1 t1%rowtype;
-DECLARE r2 t2%rowtype;
+DECLARE r1 t1_im%rowtype;
+DECLARE r2 t2_im%rowtype;
 DECLARE start timestamp;
 DECLARE countrows decimal;
 DECLARE a integer;
@@ -102,8 +90,8 @@ BEGIN
 set seed to 0.35;
 start = clock_timestamp();
 countrows = 0;
-IF interval_s <= 0 THEN
-interval_s = 1;
+IF interval_mul <= 0 THEN
+interval_mul = 1;
 END IF;
 	LOOP 
 	EXIT WHEN countrows>=numrows;
@@ -119,18 +107,18 @@ END IF;
 		END IF;
 		
 		-- DURATA QUADRUPLA 1 PRIMA TABELLA
-		a = 1; b = 5;
+		a = 1 *interval_mul ; b = 5 *interval_mul;
 		dmin = floor(random()*(b-a+1))+a;
-		a = 6; b = 10;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r1.d1 = int4range(dmin, dmax, '[]');
 
 		
 		-- DURATA QUADRUPLA 1 SECONDA TABELLA
-		a = 1; b = 5;                
+		a = 1*interval_mul; b = 5*interval_mul;                
 		dmin = floor(random()*(b-a+1))+a;
-		a = 6; b = 10;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r2.d1 = int4range(dmin, dmax, '[]');
@@ -138,31 +126,31 @@ END IF;
 
 		IF countrows < numrows*tempintersect THEN --le quadruple si devono intersecare
 		--QUADRUPLA 1 PRIMA TABELLA
-		a = 10 * interval_s; b = 15 * interval_s;          
+		a = 10 * interval_mul; b = 15 * interval_mul;          
 		smin = floor(random()*(b-a+1))+a; 
-		a = 16 * interval_s; b = 20 * interval_s;          
+		a = 16 * interval_mul; b = 20 * interval_mul;          
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
-		a = 12 * interval_s ; b = 17 * interval_s;
+		a = 12 * interval_mul ; b = 17 * interval_mul;
 		smin = floor(random()*(b-a+1))+a;
-		a = 18 * interval_s ; b = 22 * interval_s;
+		a = 18 * interval_mul ; b = 22 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 30 * interval_s ; b = 35 * interval_s;        
+		a = 30 * interval_mul ; b = 35 * interval_mul;        
 		smin = floor(random()*(b-a+1))+a; 
-		a = 36 * interval_s ; b = 40 * interval_s;        
+		a = 36 * interval_mul ; b = 40 * interval_mul;        
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 50 * interval_s; b = 55 * interval_s;           
+		a = 50 * interval_mul; b = 55 * interval_mul;           
 		smin = floor(random()*(b-a+1))+a;               
-		a = 56 * interval_s; b = 60 * interval_s;
+		a = 56 * interval_mul; b = 60 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
@@ -170,10 +158,10 @@ END IF;
 		
 		END IF;
 		-- QUADRUPLA 2 PRIMA TABELLA
-		a = 1 * interval_s ; b = 2 * interval_s;
+		a = 1 * interval_mul ; b = 2 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs ( upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 1; b = 2;
+		a = 1 *interval_mul; b = 2 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
 		dmax = upper(r1.d1) - (floor(random()*(b-a+1))+a);
 		IF smin > smax THEN
@@ -188,10 +176,10 @@ END IF;
 		r1.d2 = int4range(dmin,dmax, '[]');	
 		END IF;
 		-- QUADRUPLA 3 PRIMA TABELLA
-		a = 2 * interval_s ; b = 4 * interval_s;
+		a = 2 * interval_mul ; b = 4 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 2; b = 3;
+		a = 2 * interval_mul; b = 3 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
@@ -207,10 +195,10 @@ END IF;
 		END IF;
 	
 		-- QUADRUPLA 2 SECONDA TABELLA
-		a =  1* interval_s; b = 2*interval_s;
+		a =  1* interval_mul; b = 2*interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 1; b = 2;
+		a = 1 * interval_mul; b = 2 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
@@ -226,10 +214,10 @@ END IF;
 		END IF;
 	
 		-- QUADRUPLA 3 SECONDA TABELLA
-		a = 2 * interval_s ; b = 4 * interval_s;
+		a = 2 * interval_mul ; b = 4 * interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 2; b = 3;
+		a = 2 * interval_mul; b = 3 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
@@ -244,11 +232,11 @@ END IF;
 		END IF;
 
 -- INSERIMENTO NELLE TABELLE
-		INSERT INTO t1 SELECT r1.*;
-		INSERT INTO t2 SELECT r2.*;
+		INSERT INTO t1_im SELECT r1.*;
+		INSERT INTO t2_im SELECT r2.*;
 		
-		INSERT INTO t3 SELECT * FROM MakeExplicit(r1.Attr1, r1.Attr2, r1.s1, r1.d1, r1.s2, r1.d2, r1.s3, r1.d3);
-		INSERT INTO t4 SELECT * FROM MakeExplicit(r2.Attr1, r2.Attr2, r2.s1, r2.d1, r2.s2, r2.d2, r2.s3, r2.d3);
+		INSERT INTO t1_me SELECT * FROM MakeExplicit(r1.Attr1, r1.Attr2, r1.s1, r1.d1, r1.s2, r1.d2, r1.s3, r1.d3);
+		INSERT INTO t2_me SELECT * FROM MakeExplicit(r2.Attr1, r2.Attr2, r2.s1, r2.d1, r2.s2, r2.d2, r2.s3, r2.d3);
 								   
 		INSERT INTO t5 SELECT r1.Attr1, r1.Attr2;
 		INSERT INTO t6 SELECT r2.Attr1, r2.Attr2;

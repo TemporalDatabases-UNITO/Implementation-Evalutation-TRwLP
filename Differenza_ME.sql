@@ -1,27 +1,21 @@
-select reset();
-select POPOLAMENTO(1000, 0.1, 0.1,1);
-
 /* NON MANTIENE ORDINE MA PIU' EFFICIENTE*/
-CREATE OR REPLACE FUNCTION array_difference(t3 pair[], t4 pair[]) RETURNS pair[] AS $$
-DECLARE ret pair[];
+CREATE OR REPLACE FUNCTION array_difference(t1_me pair[], t2_me pair[]) RETURNS pair[] AS $$
 BEGIN
-    SELECT ARRAY_AGG(e) INTO ret
-		FROM(
-		SELECT UNNEST(t3)
+    RETURN ARRAY(
+        SELECT UNNEST(t1_me)
         EXCEPT
-        SELECT UNNEST(t4)
-		) AS dt(e);
-   RETURN ret;
+        SELECT UNNEST(t2_me)
+    );
 END;
 $$ LANGUAGE plpgsql;
 
 /*MANTIENE ORDINE MA MOLTO INEFFICIENTE
-CREATE OR REPLACE FUNCTION array_difference_order(t3 pair[], t4 pair[]) RETURNS pair[] AS $$
+CREATE OR REPLACE FUNCTION array_difference_order(t1_me pair[], t2_me pair[]) RETURNS pair[] AS $$
 DECLARE ret pair[];
 BEGIN
    SELECT COALESCE(array_agg(elem), '{}') INTO RET
-   FROM UNNEST(t3) elem
-   WHERE elem <> ALL(t4);
+   FROM UNNEST(t1_me) elem
+   WHERE elem <> ALL(t2_me);
    RETURN ret;
 END;
 $$ LANGUAGE plpgsql;
@@ -36,21 +30,17 @@ RETURNS TABLE(
 BEGIN
 RETURN QUERY
 with t as (
-  select t3.Attr1, t3.Attr2, array_difference(t3.low,t4.low) as low_d, array_difference(t3.medium,t4.low) as medium_d, array_difference(t3.high,t4.low) as high_d
-  from t3 join t4 on (t3.Attr1 = t4.Attr1 and t3.Attr2 = t4.Attr2)     
-  where not (array_difference(t3.low,t4.low)  = '{}'))
+  select t1_me.Attr1, t1_me.Attr2, array_difference(t1_me.low,t2_me.low) as low_d, array_difference(t1_me.medium,t2_me.low) as medium_d, array_difference(t1_me.high,t2_me.low) as high_d
+  from t1_me join t2_me on (t1_me.Attr1 = t2_me.Attr1 and t1_me.Attr2 = t2_me.Attr2)     
+  where not (array_difference(t1_me.low,t2_me.low)  = '{}'))
 select * from (
 	select Attr1, Attr2, low_d, medium_d, high_d
 	from t 
 	union
 	select Attr1, Attr2, low, medium, high
-	from t3 where not exists (select * from t4 where t3.Attr1 = t4.Attr1 and t3.Attr2 = t4.Attr2));
+	from t1_me where not exists (select * from t2_me where t1_me.Attr1 = t2_me.Attr1 and t1_me.Attr2 = t2_me.Attr2));
 END;
 $$
 LANGUAGE plpgsql;
 
 SELECT * FROM differenza_ME();
-
-
-
-
