@@ -81,6 +81,7 @@ DECLARE start timestamp;
 DECLARE countrows decimal;
 DECLARE a integer;
 DECLARE b integer;
+DECLARE c integer;
 DECLARE smin integer;
 DECLARE smax integer;
 DECLARE dmin integer;
@@ -154,8 +155,6 @@ END IF;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
-
-		
 		END IF;
 		-- QUADRUPLA 2 PRIMA TABELLA
 		a = 1 * interval_mul ; b = 2 * interval_mul;
@@ -164,51 +163,55 @@ END IF;
 		a = 1 *interval_mul; b = 2 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
 		dmax = upper(r1.d1) - (floor(random()*(b-a+1))+a);
+
 		IF smin > smax THEN
-		r1.s2 = int4range(smax,smin, '[]');		
+		r1.s2 = int4range(lower(r1.s1),upper(r1.s1)-1, '[]');		
 		ELSE
 		r1.s2 = int4range(smin,smax, '[]');	
 		END IF;
 		
 		IF dmin > dmax THEN
-		r1.d2 = int4range(dmax,dmin, '[]');		
+		r1.d2 = int4range(lower(r1.d1),upper(r1.d1)-1, '[]');		
 		ELSE
 		r1.d2 = int4range(dmin,dmax, '[]');	
 		END IF;
 		-- QUADRUPLA 3 PRIMA TABELLA
 		a = 2 * interval_mul ; b = 4 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 2 * interval_mul; b = 3 * interval_mul;
+		smax = abs ( upper(r1.s1) - (floor(random()*(b-a+1))+a));
+		
+		a = 2 *interval_mul; b = 3 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
+		dmax = upper(r1.d1) - (floor(random()*(b-a+1))+a);
+		
 		IF smin > smax THEN
-		r1.s3 = int4range(smax,smin, '[]');
+		r1.s3 = int4range(lower(r1.s2),upper(r1.s2)-1, '[]');		
 		ELSE 
 		r1.s3 = int4range(smin,smax, '[]');
 		END IF;
 		
 		IF dmin > dmax THEN
-		r1.d3 = int4range(dmax,dmin, '[]');
+		r1.d3 = int4range(lower(r1.d2),upper(r1.d2)-1, '[]');		
 		ELSE 
 		r1.d3 = int4range(dmin,dmax, '[]');
 		END IF;
 	
 		-- QUADRUPLA 2 SECONDA TABELLA
-		a =  1* interval_mul; b = 2*interval_mul;
+		a = 1 * interval_mul ; b = 2 * interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 1 * interval_mul; b = 2 * interval_mul;
+		smax = abs ( upper(r2.s1) - (floor(random()*(b-a+1))+a));
+		a = 1 *interval_mul; b = 2 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+		dmax = upper(r2.d1) - (floor(random()*(b-a+1))+a);
+		
 		IF smin > smax THEN
-		r2.s2 = int4range(smax,smin, '[]');		
+		r2.s2 = int4range(lower(r2.s1),upper(r2.s1)-1, '[]');		
 		ELSE
 		r2.s2 = int4range(smin,smax, '[]');	
 		END IF;
 		
 		IF dmin > dmax THEN
-		r2.d2 = int4range(dmax,dmin, '[]');		
+		r2.d2 = int4range(lower(r2.d1),upper(r2.d1)-1, '[]');		
 		ELSE
 		r2.d2 = int4range(dmin,dmax, '[]');	
 		END IF;
@@ -216,17 +219,19 @@ END IF;
 		-- QUADRUPLA 3 SECONDA TABELLA
 		a = 2 * interval_mul ; b = 4 * interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 2 * interval_mul; b = 3 * interval_mul;
+		smax = abs ( upper(r2.s1) - (floor(random()*(b-a+1))+a));
+		
+		a = 2 *interval_mul; b = 3 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+		dmax = upper(r2.d1) - (floor(random()*(b-a+1))+a);
+		
 		IF smin > smax THEN
-		r2.s3 = int4range(smax,smin, '[]');		
+		r2.s3 = int4range(lower(r2.s2),upper(r2.s2)-1, '[]');		
 		ELSE
 		r2.s3 = int4range(smin,smax, '[]');		
 		END IF;
 		IF dmin > dmax THEN
-		r2.d3 = int4range(dmax,dmin, '[]');		
+		r2.d3 = int4range(lower(r2.d2),upper(r2.d2)-1, '[]');		
 		ELSE
 		r2.d3 = int4range(dmin,dmax, '[]');		
 		END IF;
@@ -245,6 +250,6 @@ END IF;
 END; $$
 LANGUAGE plpgsql;
 
-select POPOLAMENTO(25000, 0.1, 0.2,1);
+select POPOLAMENTO(2500, 0.1, 0.2,1);
 
 

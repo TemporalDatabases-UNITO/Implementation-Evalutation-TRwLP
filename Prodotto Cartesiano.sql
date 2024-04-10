@@ -1,4 +1,4 @@
-CREATE INDEX idx_t1_s1 ON t1_im USING GIST (s1);
+/*CREATE INDEX idx_t1_s1 ON t1_im USING GIST (s1);
 CREATE INDEX idx_t2_s1 ON t2_im USING GIST (s1);
 CREATE INDEX idx_t1_d1 ON t1_im USING GIST (d1);
 CREATE INDEX idx_t2_d1 ON t2_im USING GIST (d1);
@@ -9,7 +9,7 @@ CREATE INDEX idx_t2_d2 ON t2_im USING GIST (d2);
 CREATE INDEX idx_t1_s3 ON t1_im USING GIST (s3);
 CREATE INDEX idx_t2_s3 ON t2_im USING GIST (s3);
 CREATE INDEX idx_t1_d3 ON t1_im USING GIST (d3);
-CREATE INDEX idx_t2_d3 ON t2_im USING GIST (d3);
+CREATE INDEX idx_t2_d3 ON t2_im USING GIST (d3);*/
 
 CREATE OR REPLACE FUNCTION prodotto_cartesiano()
 RETURNS TABLE(
@@ -28,8 +28,12 @@ RETURN QUERY
 SELECT 
   t1_im.Attr1, t2_im.Attr1, t1_im.Attr2, t2_im.Attr2,
   t1_im.s1 * t2_im.s1, t1_im.d1 * t2_im.d1,
-  t1_im.s2 * t2_im.s2, t1_im.d2 * t2_im.d2,
-  t1_im.s3 * t2_im.s3, t1_im.d3 * t2_im.d3
+  CASE WHEN COALESCE(t1_im.d2 * t2_im.d2,'empty') IS NOT DISTINCT FROM 'empty' THEN 'empty' ELSE COALESCE(t1_im.s2 * t2_im.s2,'empty') END,
+  CASE WHEN COALESCE(t1_im.s2 * t2_im.s2,'empty') IS NOT DISTINCT FROM 'empty' THEN 'empty' ELSE COALESCE(t1_im.d2 * t2_im.d2,'empty') END,
+  
+  CASE WHEN COALESCE(t1_im.d3 * t2_im.d3,'empty') IS NOT DISTINCT FROM 'empty' THEN 'empty' ELSE COALESCE(t1_im.s3 * t2_im.s3,'empty') END,
+  CASE WHEN COALESCE(t1_im.s3 * t2_im.s3,'empty') IS NOT DISTINCT FROM 'empty' THEN 'empty' ELSE COALESCE(t1_im.d3 * t2_im.d3,'empty') END
+
 FROM 
   t1_im, t2_im 
 WHERE 
