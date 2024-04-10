@@ -3,8 +3,10 @@ import json
 import os
 import re
 import matplotlib.pyplot as plt
+import pandas as pd
+from matplotlib.ticker import ScalarFormatter
 
-folder_path = "C:/Users/Antonella/Documents/GitHub/Tesi-Implementazione-SQL/TEST"
+folder_path = "C:/Users/Antonella/Documents/GitHub/Tesi-Implementazione-SQL/TEST/10INT_TEST"
 
 
 # Function to convert k-values in numbers
@@ -33,8 +35,8 @@ def process_files(path):
                     for row in reader:
                         json_file = row[0]
                         json_data = json.loads(json_file)
-                        execution_time = json_data[0]['Execution Time']
                         actual_rows = json_data[0]['Plan']['Actual Rows']
+                        execution_time = json_data[0]['Execution Time']
                         if key not in query_dict:
                             query_dict[key] = {'execution_times': [None, None, None], 'actual_rows': actual_rows}
                         query_dict[key]['execution_times'][int(campionamento) - 1] = execution_time
@@ -96,12 +98,47 @@ def plot_data(plot_dict):
         plt.plot(x, y, label=version, linestyle='-' if version == 'Implicit' else '--',
                  marker='o' if version == 'Implicit' else 's')
     plt.title("Answer Size for Difference")
-    plt.xlabel("Number of Tuples")
-    plt.ylabel("Answer Size (number of rows)")
+    plt.xlabel("Number of Input Tuples")
+    plt.ylabel("Answer Size (number of tuples)")
     plt.legend()
     plt.show()
 
 
+def extract_tuples(input_string):
+    match = re.search(r'DIFF_(\d+k)_(\d+)_', input_string)
+    if match:
+        return match.group(1)
+    else:
+        return 'unknown'
+
+
+def iograph(path, operation):
+    data = pd.read_csv(path)
+    data['version'] = data['query'].apply(lambda x: 'Implicit' if '_IM' in x else 'Explicit')
+    data['total_io_blks'] = data['exec_reads_blks'] + data['exec_writes_blks']
+    data['input_tuples'] = data['query'].apply(extract_tuples)
+    data['operation'] = data['query'].apply(lambda x: 'Difference' if 'DIFF_' in x else 'Cartesian Product')
+    grouped_data = data.groupby(['version', 'input_tuples'])['total_io_blks'].mean().reset_index()
+
+    plt.figure(figsize=(9, 8))
+
+    for version in ['Implicit', 'Explicit']:
+        subset = grouped_data[grouped_data['version'] == version].copy()  # Usa .copy() qui
+        subset['input_tuples_num'] = subset['input_tuples'].apply(lambda x: int(x[:-1]) * 1000)
+        subset.sort_values(by='input_tuples_num', inplace=True)
+
+        plt.plot(subset['input_tuples_num'], subset['total_io_blks'], label=version,
+                 marker='o' if version == 'Implicita' else 's', linestyle='-' if version == 'Implicit' else '--')
+    formatter = ScalarFormatter(useOffset=False)
+    formatter.set_scientific(False)
+    plt.gca().xaxis.set_major_formatter(formatter)
+    plt.title('IO/Dataset Size  ' + operation)
+    plt.xlabel('Number of Input Tuples')
+    plt.ylabel('Average I/O Blocks')
+    plt.legend()
+    plt.show()
+
+
+iograph("C:/Users/Antonella/Documents/GitHub/Tesi-Implementazione-SQL/TEST/IO_DIFF_10INT.csv", 'Difference')
 data_structure = process_files(folder_path)
 plot_data(data_structure)
-
