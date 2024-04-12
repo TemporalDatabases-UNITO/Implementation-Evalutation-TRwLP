@@ -12,13 +12,13 @@
       ""Total Cost"": 10.25,
       ""Plan Rows"": 1000,
       ""Plan Width"": 224,
-      ""Actual Startup Time"": 371328.308,
-      ""Actual Total Time"": 371356.065,
-      ""Actual Rows"": 152695,
+      ""Actual Startup Time"": 177865.896,
+      ""Actual Total Time"": 177878.493,
+      ""Actual Rows"": 59985,
       ""Actual Loops"": 1,
       ""Output"": [""attr1_t1"", ""attr1_t2"", ""attr2_t1"", ""attr2_t2"", ""low"", ""medium"", ""high""],
       ""Function Call"": ""prodotto_cartesiano_me()"",
-      ""Shared Hit Blocks"": 1475,
+      ""Shared Hit Blocks"": 899,
       ""Shared Read Blocks"": 0,
       ""Shared Dirtied Blocks"": 0,
       ""Shared Written Blocks"": 0,
@@ -26,8 +26,8 @@
       ""Local Read Blocks"": 0,
       ""Local Dirtied Blocks"": 0,
       ""Local Written Blocks"": 0,
-      ""Temp Read Blocks"": 2790007,
-      ""Temp Written Blocks"": 19393,
+      ""Temp Read Blocks"": 1066809,
+      ""Temp Written Blocks"": 7657,
       ""WAL Records"": 0,
       ""WAL FPI"": 0,
       ""WAL Bytes"": 0
@@ -50,6 +50,6 @@
     ""Planning Time"": 0.017,
     ""Triggers"": [
     ],
-    ""Execution Time"": 371375.029
+    ""Execution Time"": 177887.460
   }
 ]"

@@ -1,0 +1,55 @@
+"QUERY PLAN"
+"[
+  {
+    ""Plan"": {
+      ""Node Type"": ""Function Scan"",
+      ""Parallel Aware"": false,
+      ""Async Capable"": false,
+      ""Function Name"": ""differenza_me"",
+      ""Schema"": ""public"",
+      ""Alias"": ""differenza_me"",
+      ""Startup Cost"": 0.25,
+      ""Total Cost"": 10.25,
+      ""Plan Rows"": 1000,
+      ""Plan Width"": 160,
+      ""Actual Startup Time"": 68804.787,
+      ""Actual Total Time"": 68926.563,
+      ""Actual Rows"": 248756,
+      ""Actual Loops"": 1,
+      ""Output"": [""attr1_diff"", ""attr2_diff"", ""low_diff"", ""medium_diff"", ""high_diff""],
+      ""Function Call"": ""differenza_me()"",
+      ""Shared Hit Blocks"": 1500124,
+      ""Shared Read Blocks"": 488565,
+      ""Shared Dirtied Blocks"": 2,
+      ""Shared Written Blocks"": 429,
+      ""Local Hit Blocks"": 0,
+      ""Local Read Blocks"": 0,
+      ""Local Dirtied Blocks"": 0,
+      ""Local Written Blocks"": 0,
+      ""Temp Read Blocks"": 339546,
+      ""Temp Written Blocks"": 469682,
+      ""WAL Records"": 1,
+      ""WAL FPI"": 0,
+      ""WAL Bytes"": 114
+    },
+    ""Settings"": {
+    },
+    ""Query Identifier"": -3423146877229021208,
+    ""Planning"": {
+      ""Shared Hit Blocks"": 0,
+      ""Shared Read Blocks"": 0,
+      ""Shared Dirtied Blocks"": 0,
+      ""Shared Written Blocks"": 0,
+      ""Local Hit Blocks"": 0,
+      ""Local Read Blocks"": 0,
+      ""Local Dirtied Blocks"": 0,
+      ""Local Written Blocks"": 0,
+      ""Temp Read Blocks"": 0,
+      ""Temp Written Blocks"": 0
+    },
+    ""Planning Time"": 0.021,
+    ""Triggers"": [
+    ],
+    ""Execution Time"": 69023.994
+  }
+]"

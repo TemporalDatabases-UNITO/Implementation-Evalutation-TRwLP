@@ -12,8 +12,8 @@
       ""Total Cost"": 10.25,
       ""Plan Rows"": 1000,
       ""Plan Width"": 320,
-      ""Actual Startup Time"": 49.300,
-      ""Actual Total Time"": 49.410,
+      ""Actual Startup Time"": 38.375,
+      ""Actual Total Time"": 38.483,
       ""Actual Rows"": 2329,
       ""Actual Loops"": 1,
       ""Output"": [""attr1_t1"", ""attr1_t2"", ""attr2_t1"", ""attr2_t2"", ""s1"", ""d1"", ""s2"", ""d2"", ""s3"", ""d3""],
@@ -47,9 +47,9 @@
       ""Temp Read Blocks"": 0,
       ""Temp Written Blocks"": 0
     },
-    ""Planning Time"": 0.026,
+    ""Planning Time"": 0.018,
     ""Triggers"": [
     ],
-    ""Execution Time"": 49.514
+    ""Execution Time"": 38.584
   }
 ]"
