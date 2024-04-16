@@ -215,7 +215,7 @@ def plot_comparison(data_list, labels, operation_types, versions, title_suffix, 
                     ax.plot(num_tuples, average_execution_time, label=label)
             ax.set_title(f'{version_labels[version]} - {operation_labels[operation]}')
             ax.set_xlabel('Number of Tuples')
-            ax.set_ylabel('Average Execution Time')
+            ax.set_ylabel('Average Execution Time (ms)')
             if in_scale:
                 ax.set_ylim(limits[operation]['min'], limits[operation]['max'])  # Applica i limiti per operazione
             ax.legend()
