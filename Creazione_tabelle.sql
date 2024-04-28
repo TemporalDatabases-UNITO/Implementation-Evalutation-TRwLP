@@ -56,6 +56,21 @@ CREATE TABLE t6 (
 	Attr2 varchar(150),
 	ID Serial
 );
+DROP TABLE IF EXISTS t7;
+CREATE TABLE t7 (
+	Attr1 varchar(150),
+	Attr2 varchar(150),
+  T int4range,
+	ID Serial,
+);
+
+DROP TABLE IF EXISTS t8;
+CREATE TABLE t8 (
+	Attr1 varchar(150),
+	Attr2 varchar(150),
+  T int4range,
+	ID Serial
+);
 END; $$
 LANGUAGE plpgsql;
 
@@ -245,6 +260,9 @@ END IF;
 								   
 		INSERT INTO t5 SELECT r1.Attr1, r1.Attr2;
 		INSERT INTO t6 SELECT r2.Attr1, r2.Attr2;
+
+    INSERT INTO t7 SELECT r1.Attr1, r1.Attr2, r1.s1;
+		INSERT INTO t8 SELECT r2.Attr1, r2.Attr2, r2.s1;
 		
 	END LOOP;
 END; $$
