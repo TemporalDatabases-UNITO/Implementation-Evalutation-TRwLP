@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION differenza_NoTime()
 RETURNS TABLE(
   Attr1_t1 varchar(150),
-  Attr1_t2 varchar(150),
+  Attr1_t2 varchar(150)
 ) 
 AS $$
 BEGIN
@@ -19,7 +19,7 @@ RETURNS TABLE(
   Attr1_t1 varchar(150),
   Attr1_t2 varchar(150),
   Attr2_t1 varchar(150),
-  Attr2_t2 varchar(150),
+  Attr2_t2 varchar(150)
 ) 
 AS $$
 BEGIN

@@ -12,8 +12,8 @@ RETURNS TABLE(
   s4 int4range,
   d4 int4range,
   s5 int4range,
-  d5 int4range
-	s6 int4range,
+  d5 int4range,
+  s6 int4range,
   d6 int4range,
   s7 int4range,
   d7 int4range,
@@ -48,12 +48,12 @@ ELSE
 		ret1 =  sub_1_m(t1_s1, t1_d1 , t2_s1, t2_d1);
 		ret2 =  sub_1_m(t1_s2, t1_d2 , t2_s1, t2_d1);
 		ret3 =  sub_1_m(t1_s3, t1_d3 , t2_s1, t2_d1);
-    ret4 =  sub_1_m(t1_s4, t1_d4 , t2_s1, t2_d1);
+        ret4 =  sub_1_m(t1_s4, t1_d4 , t2_s1, t2_d1);
 		ret5 =  sub_1_m(t1_s5, t1_d5 , t2_s1, t2_d1);
 		ret6 =  sub_1_m(t1_s6, t1_d6 , t2_s1, t2_d1);
 		ret7 =  sub_1_m(t1_s7, t1_d7 , t2_s1, t2_d1);
 		ret8 =  sub_1_m(t1_s8, t1_d8 , t2_s1, t2_d1);
-    ret9 =  sub_1_m(t1_s9, t1_d9 , t2_s1, t2_d1);
+        ret9 =  sub_1_m(t1_s9, t1_d9 , t2_s1, t2_d1);
 		ret10 =  sub_1_m(t1_s10, t1_d10 , t2_s1, t2_d1);
 
 
@@ -120,7 +120,7 @@ ELSE
 		ret6[3], ret6[4], ret7[3], ret7[4], ret8[3], ret8[4] , ret9[3], ret9[4] , ret10[3], ret10[4] ),
 		(ret1[5], ret1[6], ret2[5], ret2[6], ret3[5], ret3[6] , ret4[5], ret4[6] , ret5[5], ret5[6] ,
 		ret6[5], ret6[6], ret7[5], ret7[6], ret8[5], ret8[6] , ret9[5], ret9[6] , ret10[5], ret10[6] ),
-		(ret1[7], ret1[8], ret2[7], ret2[8], ret3[7], ret3[8],  ret4[7], ret4[8]  ,ret5[7], ret5[8] 
+		(ret1[7], ret1[8], ret2[7], ret2[8], ret3[7], ret3[8],  ret4[7], ret4[8]  ,ret5[7], ret5[8] ,
 		ret6[7], ret6[8], ret7[7], ret7[8], ret8[7], ret8[8],  ret9[7], ret9[8]  ,ret10[7], ret10[8]);
 END IF;
 END; $$

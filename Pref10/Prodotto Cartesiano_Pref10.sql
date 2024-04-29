@@ -101,7 +101,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
-select * from prodotto_cartesiano_pref10();
 
   
   

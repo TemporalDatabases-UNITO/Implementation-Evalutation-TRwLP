@@ -136,18 +136,18 @@ END IF;
 		END IF;
 		
 		-- DURATA QUADRUPLA 1 PRIMA TABELLA
-		a = 1 *interval_mul ; b = 25 *interval_mul;
+		a = 1 *interval_mul ; b = 12 *interval_mul;
 		dmin = floor(random()*(b-a+1))+a;
-		a = 26 *interval_mul; b = 50*interval_mul;
+		a = 13 *interval_mul; b = 25*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r1.d1 = int4range(dmin, dmax, '[]');
 
 		
 		-- DURATA QUADRUPLA 1 SECONDA TABELLA
-		a = 1*interval_mul; b = 25*interval_mul;                
+		a = 1*interval_mul; b = 12*interval_mul;                
 		dmin = floor(random()*(b-a+1))+a;
-		a = 26 *interval_mul; b = 50*interval_mul;
+		a = 13 *interval_mul; b = 25*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r2.d1 = int4range(dmin, dmax, '[]');
@@ -155,31 +155,31 @@ END IF;
 
 		IF countrows < numrows*tempintersect THEN --le quadruple si devono intersecare
 		--QUADRUPLA 1 PRIMA TABELLA
-		a = 10 * interval_mul; b = 35 * interval_mul;          
+		a = 10 * interval_mul; b = 22 * interval_mul;          
 		smin = floor(random()*(b-a+1))+a; 
-		a = 36 * interval_mul; b = 50 * interval_mul;          
+		a = 22 * interval_mul; b = 35 * interval_mul;          
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
-		a = 12 * interval_mul ; b = 38 * interval_mul;
+		a = 12 * interval_mul ; b = 24 * interval_mul;
 		smin = floor(random()*(b-a+1))+a;
-		a = 39 * interval_mul ; b = 47 * interval_mul;
+		a = 25 * interval_mul ; b = 37 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 30 * interval_mul ; b = 56 * interval_mul;        
+		a = 30 * interval_mul ; b = 42 * interval_mul;        
 		smin = floor(random()*(b-a+1))+a; 
-		a = 57 * interval_mul ; b = 65 * interval_mul;        
+		a = 43 * interval_mul ; b = 55 * interval_mul;        
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 50 * interval_mul; b = 76 * interval_mul;           
+		a = 50 * interval_mul; b = 62 * interval_mul;           
 		smin = floor(random()*(b-a+1))+a;               
-		a = 77 * interval_mul; b = 95 * interval_mul;
+		a = 63 * interval_mul; b = 75 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	

@@ -67,4 +67,3 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-select * from prodotto_cartesiano_ME_Pref5();

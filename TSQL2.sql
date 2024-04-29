@@ -4,7 +4,7 @@ RETURNS TABLE(
   Attr1_t2 varchar(150),
   Attr2_t1 varchar(150),
   Attr2_t2 varchar(150),
-  time int4range
+  times int4range
 ) 
 AS $$
 BEGIN
@@ -19,7 +19,7 @@ CREATE OR REPLACE FUNCTION differenza_TSQL2()
 RETURNS TABLE(
   Attr1_t1 varchar(150),
   Attr1_t2 varchar(150),
-  time int4range
+  times int4range
 )
 AS $$
 BEGIN
