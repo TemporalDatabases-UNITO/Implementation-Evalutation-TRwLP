@@ -1,0 +1,55 @@
+"QUERY PLAN"
+"[
+  {
+    ""Plan"": {
+      ""Node Type"": ""Function Scan"",
+      ""Parallel Aware"": false,
+      ""Async Capable"": false,
+      ""Function Name"": ""prodotto_cartesiano_pref10"",
+      ""Schema"": ""public"",
+      ""Alias"": ""prodotto_cartesiano_pref10"",
+      ""Startup Cost"": 0.25,
+      ""Total Cost"": 10.25,
+      ""Plan Rows"": 1000,
+      ""Plan Width"": 768,
+      ""Actual Startup Time"": 1121.227,
+      ""Actual Total Time"": 1139.709,
+      ""Actual Rows"": 182342,
+      ""Actual Loops"": 1,
+      ""Output"": [""attr1_t1"", ""attr1_t2"", ""attr2_t1"", ""attr2_t2"", ""s1"", ""d1"", ""s2"", ""d2"", ""s3"", ""d3"", ""s4"", ""d4"", ""s5"", ""d5"", ""s6"", ""d6"", ""s7"", ""d7"", ""s8"", ""d8"", ""s9"", ""d9"", ""s10"", ""d10""],
+      ""Function Call"": ""prodotto_cartesiano_pref10()"",
+      ""Shared Hit Blocks"": 265,
+      ""Shared Read Blocks"": 0,
+      ""Shared Dirtied Blocks"": 9,
+      ""Shared Written Blocks"": 0,
+      ""Local Hit Blocks"": 0,
+      ""Local Read Blocks"": 0,
+      ""Local Dirtied Blocks"": 0,
+      ""Local Written Blocks"": 0,
+      ""Temp Read Blocks"": 6024,
+      ""Temp Written Blocks"": 6024,
+      ""WAL Records"": 5,
+      ""WAL FPI"": 5,
+      ""WAL Bytes"": 30427
+    },
+    ""Settings"": {
+    },
+    ""Query Identifier"": 4123702662336821217,
+    ""Planning"": {
+      ""Shared Hit Blocks"": 0,
+      ""Shared Read Blocks"": 0,
+      ""Shared Dirtied Blocks"": 0,
+      ""Shared Written Blocks"": 0,
+      ""Local Hit Blocks"": 0,
+      ""Local Read Blocks"": 0,
+      ""Local Dirtied Blocks"": 0,
+      ""Local Written Blocks"": 0,
+      ""Temp Read Blocks"": 0,
+      ""Temp Written Blocks"": 0
+    },
+    ""Planning Time"": 0.020,
+    ""Triggers"": [
+    ],
+    ""Execution Time"": 851.253
+  }
+]"

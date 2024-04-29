@@ -8,8 +8,8 @@ from matplotlib.ticker import ScalarFormatter
 
 operation_types = ['DIFF', 'PC']
 versions = ['IM', 'ME']
-label_pref = ['1 Preference Level', '3 Preference Level', '5 Preference Level']
-label_interval = ['10 Interval Size', '50 Interval Size', '100 Interval Size']
+label_pref = ['1 Preference Level', '3 Preference Level', '5 Preference Level', '10 Preference Level', 'Non Temporal', 'TSQL2']
+label_interval = ['10 Interval Size', '50 Interval Size', '100 Interval Size', 'Non Temporal', 'TSQL2']
 temporal_limit = 2077000
 type_interval = {
     '10INT': '10 Interval Size',
@@ -20,7 +20,8 @@ type_interval = {
 type_pref = {
     '1PREF': '1 Preference Level',
     '10INT': '3 Preference Level',
-    '5PREF': '5 Preference Level'
+    '5PREF': '5 Preference Level',
+    '10PREF': '10 Preference Level'
 }
 
 result_path = "C:/Users/Antonella/Documents/GitHub/Tesi-Implementazione-SQL/RESULT"
@@ -40,7 +41,7 @@ def process_files(path, description_data):
 
     for filename in os.listdir(path):
         if filename.endswith('.csv'):
-            match = re.match(r'(\d+(?:\.\d+)?\s*k?)_(\d+)_(me|im)_(diff|pc)\.csv', filename, re.IGNORECASE)
+            match = re.match(r'(\d+(?:\.\d+)?\s*k?)_(\d+)_(me|im|nt|ts)_(diff|pc)\.csv', filename, re.IGNORECASE)
             if match:
                 num_tuple, campionamento, version, operation = match.groups()
                 num_tuple = convert_value(num_tuple)
@@ -120,7 +121,7 @@ def plot_data(plot_dict, descritption, save_path):
                 plt.plot(x, y, label=version, linestyle='-' if version == 'Implicit' else '--',
                          marker='o' if version == 'Implicit' else 's')
             if descritption == '50INT' and operation == 'Cartesian Product':
-                plt.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ending')
+                plt.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ends')
             plt.title(f"Average Execution Time for {operation} - {descritption}")
             plt.xlabel("Number of Tuples")
             ylabel = "Average Execution Time (minutes)" if operation == 'Cartesian Product' else "Average Execution Time (milliseconds)"
@@ -158,7 +159,11 @@ def iograph(path, operation, type_op, save_path):
     data['total_io_blks'] = data['exec_reads_blks'] + data['exec_writes_blks']
     data['input_tuples'] = data['query'].apply(extract_tuples)
     data['operation'] = data['query'].apply(lambda x: 'Difference' if 'DIFF_' in x else 'Cartesian Product')
-    data['type'] = type_op
+    if type_op == 'NT' or type_op == 'TS':
+        data['version'] = type_op
+        data['type'] = type_op
+    else:
+        data['type'] = type_op
     data = data.dropna(subset=['input_tuples'])
 
     grouped_data = data.groupby(['version', 'input_tuples', 'type', 'operation'])['total_io_blks'].mean().reset_index()
@@ -186,27 +191,25 @@ def iograph(path, operation, type_op, save_path):
 
 
 def plot_comparison(data_list, labels, operation_types, versions, title_suffix, in_scale, save_path):
-    version_names = {'IM': 'Implicit', 'ME': 'Explicit'}
+    version_names = {'IM': 'Implicit', 'ME': 'Explicit', 'TS': 'TSQL2', 'NT': 'Non Temporal'}
     operation_names = {'PC': 'Cartesian Product', 'DIFF': 'Difference'}
 
     fig, axes = plt.subplots(nrows=len(operation_types), ncols=len(versions), figsize=(15, 10))
     fig.suptitle(f'Comparison of Execution Times by Operation and Version - {title_suffix}')
 
-    # Limits dictionary to manage y-axis scales
     limits = {op: {'min': float('inf'), 'max': float('-inf')} for op in operation_types}
 
-    # Update limits based on data to maintain consistent scale if required
     for operation in operation_types:
         for data in data_list:
             for key, value in data.items():
-                if key[2].upper() == operation:  # Filter by operation
+                if key[2].upper() == operation:
                     current_min = value['average_execution_time']
                     current_max = value['average_execution_time']
                     if current_min < limits[operation]['min']:
                         limits[operation]['min'] = current_min
                     if current_max > limits[operation]['max']:
                         limits[operation]['max'] = current_max
-        limits[operation]['min'] -= limits[operation]['min'] * 0.1  # Scale min/max for better graph representation
+        limits[operation]['min'] -= limits[operation]['min'] * 0.1
         limits[operation]['max'] += limits[operation]['max'] * 0.1
 
     # Generate plots
@@ -214,67 +217,72 @@ def plot_comparison(data_list, labels, operation_types, versions, title_suffix, 
         for j, version in enumerate(versions):
             ax = axes[i][j] if len(operation_types) > 1 else axes[j]
             for data, label in zip(data_list, labels):
-                # Filter data for the specific operation and version
                 filtered_data = [(k[0], v['average_execution_time']) for k, v in data.items() if
                                  k[2].upper() == operation and k[1].upper() == version]
                 if filtered_data:
                     num_tuples, average_execution_time = zip(*sorted(filtered_data))
                     ax.plot(num_tuples, average_execution_time, label=label, marker='o', linestyle='-')
             if version == 'ME' and operation == 'PC' and labels == label_interval:
-                ax.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ending')
+                ax.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ends')
             ax.set_title(f'{version_names[version]} - {operation_names[operation]}')
             ax.set_xlabel('Number of Tuples')
             ax.set_ylabel('Average Execution Time (ms)')
             if in_scale:
                 ax.set_ylim(limits[operation]['min'],
-                            limits[operation]['max'])  # Apply consistent y-axis scale if enabled
+                            limits[operation]['max'])
             ax.legend()
 
     plt.tight_layout()
     plt.savefig(f'{save_path}.png')
     plt.close()
 
-    # Generate individual plots for each operation and version
     if not in_scale and title_suffix == 'Preference Levels':
         for operation in operation_types:
-            for version in versions:
-                if version == 'IM':
-                    plt.figure(figsize=(9, 8))
+            plt.figure(figsize=(9, 8))
+            versioni = ['IM', 'ME', 'TS', 'NT']
+            for version in versioni:
+                if version in ['IM', 'NT', 'TS']:
                     for data, label in zip(data_list, labels):
                         filtered_data = [(k[0], v['average_execution_time']) for k, v in data.items() if
                                          k[2].upper() == operation and k[1].upper() == version]
                         if filtered_data:
                             num_tuples, average_execution_time = zip(*sorted(filtered_data))
-                            plt.plot(num_tuples, average_execution_time, label=label, marker='o')
-                    plt.title(f'{version_names[version]} - {operation_names[operation]} Execution Time')
-                    plt.xlabel('Number of Tuples')
-                    plt.ylabel('Average Execution Time (ms)')
-                    plt.legend()
-                    plt.savefig(f'{save_path}_{operation}_IM.png')
-                    plt.close()
+                            plt.plot(num_tuples, average_execution_time,
+                                     label=f'{label} Implicit' if versioni == 'IM' else f'{label}', marker='o')
+
+            plt.title(f'{operation_names[operation]} Execution Time')
+            plt.xlabel('Number of Tuples')
+            plt.ylabel('Average Execution Time (ms)')
+            plt.legend()
+            plt.savefig(f'{save_path}_{operation}.png')
+            plt.close()
     if in_scale:
         fig, axes = plt.subplots(nrows=1, ncols=len(operation_types), figsize=(15, 5))
         fig.suptitle(f'Comparison of Execution Times by Operation and Version - {title_suffix}')
 
         # Loop through each operation
         for i, operation in enumerate(operation_types):
-            ax = axes[i]  # Select the subplot for the current operation
-            for version in versions:
+            ax = axes[i]
+            versioni = ['IM', 'ME', 'TS', 'NT']
+            for version in versioni:
                 for data, label in zip(data_list, labels):
-                    # Filter data for the specific operation and version
                     filtered_data = [(k[0], v['average_execution_time']) for k, v in data.items() if
                                      k[2].upper() == operation and k[1].upper() == version]
                     if filtered_data:
                         num_tuples, average_execution_time = zip(*sorted(filtered_data))
-                        ax.plot(num_tuples, average_execution_time, label=f'{label} ({version_names[version]})',
-                                linestyle='-' if version == 'IM' else '--',
-                                marker='o' if version == 'IM' else 's')
+                        if label == 'TSQL2' or label == 'Non Temporal':
+                            ax.plot(num_tuples, average_execution_time, label=f'{version_names[version]}',
+                                    linestyle='-', marker='o')
+                        else:
+                            ax.plot(num_tuples, average_execution_time, label=f'{label} ({version_names[version]})',
+                                    linestyle='-' if version == 'IM' else '--',
+                                    marker='o' if version == 'IM' else 's')
             if operation == 'PC' and labels == label_interval:
-                plt.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ending')
+                plt.axhline(y=temporal_limit, color='r', linestyle='--', label='Test Ends')
             ax.set_title(operation_names[operation])
             ax.set_xlabel('Number of Tuples')
             ax.set_ylabel('Average Execution Time (ms)')
-            if in_scale:  # Optionally set consistent y-axis limits across subplots for comparison
+            if in_scale:
                 all_values = [v['average_execution_time'] for data in data_list for k, v in data.items() if
                               k[2].upper() == operation]
                 ax.set_ylim(min(all_values) * 0.9, max(all_values) * 1.1)
@@ -288,39 +296,39 @@ def plot_comparison(data_list, labels, operation_types, versions, title_suffix, 
 def plot_io_by_type(df, title, type_labels, in_scale, save_path):
     df.sort_values(by='input_tuples', inplace=True)
 
-    # Definisci l'ordine delle operazioni e delle versioni
-    operations = ['Difference', 'Cartesian Product']  # Ordine personalizzato
-    versions = df['version'].unique()
+    df_copy = df[~(df['version'].isin(['NT', 'TS']))]
+    operations = ['Difference', 'Cartesian Product']
+    versions = df_copy['version'].unique()
+
+    fig, axes = plt.subplots(len(operations), len(versions),
+                             figsize=(15, 10))
+    fig.suptitle(title)
 
     limits = {op: {'min': float('inf'), 'max': float('-inf')} for op in operations}
     for operation in operations:
-        operation_subset = df[df['operation'] == operation]
+        operation_subset = df_copy[df_copy['operation'] == operation]
         current_min = operation_subset['total_io_blks'].min()
         current_max = operation_subset['total_io_blks'].max()
-
-        if current_min < limits[operation]['min']:
-            limits[operation]['min'] = current_min
-        if current_max > limits[operation]['max']:
-            limits[operation]['max'] = current_max
-
-    for operation in limits:
+        limits[operation]['min'] = min(limits[operation]['min'], current_min)
+        limits[operation]['max'] = max(limits[operation]['max'], current_max)
         limits[operation]['min'] *= 0.9
         limits[operation]['max'] *= 1.1
-    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-    fig.suptitle(title)
 
     for i, operation in enumerate(operations):
         for j, version in enumerate(versions):
-            ax = axes[i, j]
+            ax = axes[i][j]
             for t, label in type_labels.items():
-                subset = df[(df['operation'] == operation) & (df['version'] == version) & (df['type'] == t)]
+                subset = df_copy[
+                    (df_copy['operation'] == operation) & (df_copy['version'] == version) & (df_copy['type'] == t)]
                 ax.plot(subset['input_tuples'], subset['total_io_blks'], marker='o', label=label)
-            if in_scale:
-                ax.set_ylim(limits[operation]['min'], limits[operation]['max'])
+            if version == 'Explicit' and operation == 'Cartesian Product' and type_labels == type_interval:
+                ax.axhline(y=91170, color='r', linestyle='--', label='Test Ends')
             ax.set_title(f'{version} - {operation}')
             ax.set_xlabel('Number of Tuples')
             ax.set_ylabel('Total IO Blocks')
             ax.legend(title='Type')
+            if False:
+                ax.set_ylim(limits[operation]['min'], limits[operation]['max'])
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -344,16 +352,29 @@ def plot_io_by_type(df, title, type_labels, in_scale, save_path):
         fig, axes = plt.subplots(1, 2, figsize=(15, 5))
 
         for idx, operation in enumerate(operations):
-            for version in versions:
-                for t, label in type_labels.items():
-                    # Filtra il dataframe per operazione, versione e tipo
-                    subset = df[(df['operation'] == operation) & (df['version'] == version) & (df['type'] == t)]
-                    linestyle = '-' if version == 'Implicit' else '--'
-                    marker = 'o' if version == 'Implicit' else 's'
-                    # Plotta su subplot corrispondente
-                    axes[idx].plot(subset['input_tuples'], subset['total_io_blks'], linestyle=linestyle, marker=marker,
-                                   label=f'{version} {label}')
+            df_filtered = df[~(df['version'].isin(['NT', 'TS']))]
 
+            for version in versions:
+                linestyle = '-' if version == 'Implicit' else '--'
+                marker = 'o' if version == 'Implicit' else 's'
+
+                if version in ['NT', 'TS']:
+                    subset = df[(df['operation'] == operation) & (df['version'] == version)]
+                    label = 'Non Temporal' if version == 'NT' else 'TSQL2'
+                else:
+                    subset = df_filtered[(df_filtered['operation'] == operation) & (df_filtered['version'] == version)]
+                    label = f'{version}'
+
+                if version not in ['NT', 'TS']:
+                    for t, lbl in type_labels.items():
+                        subset_type = subset[subset['type'] == t]
+                        axes[idx].plot(subset_type['input_tuples'], subset_type['total_io_blks'], linestyle='-',
+                                       marker='o', label=f'{label} {lbl}')
+                else:
+                    axes[idx].plot(subset['input_tuples'], subset['total_io_blks'], linestyle=linestyle,
+                                   marker=marker, label=label)
+            if operation == 'Cartesian Product' and type_labels == type_interval:
+                axes[idx].axhline(y=91170, color='r', linestyle='--', label='Test Ends')
             axes[idx].set_title(operation)
             axes[idx].set_xlabel('Number of Tuples')
             axes[idx].set_ylabel('Total IO Blocks')
@@ -374,6 +395,8 @@ data_io_diff_1 = iograph(f"{base_path}/IO_DIFF_1PREF.csv", 'Difference - 1 Prefe
                          f'{result_path}/IO/IO_DIFF_1PREF')
 data_io_diff_5 = iograph(f"{base_path}/IO_DIFF_5PREF.csv", 'Difference - 5 Preference', '5PREF',
                          f'{result_path}/IO/IO_DIFF_5PREF')
+data_io_diff_10pref = iograph(f"{base_path}/IO_DIFF_10PREF.csv", 'Difference - 10 Preference', '10PREF',
+                         f'{result_path}/IO/IO_DIFF_10PREF')
 data_io_pc_10 = iograph(f"{base_path}/IO_PC_10INT.csv", 'Cartesian Product - 10 Interval',
                         '10INT', f'{result_path}/IO/IO_PC_10INT')
 data_io_pc_50 = iograph(f"{base_path}/IO_PC_50INT.csv", 'Cartesian Product - 50 Interval',
@@ -382,9 +405,21 @@ data_io_pc_1 = iograph(f"{base_path}/IO_PC_1PREF.csv", 'Cartesian Product - 1 Pr
                        '1PREF', f'{result_path}/IO/IO_PC_1PREF')
 data_io_pc_5 = iograph(f"{base_path}/IO_PC_5PREF.csv", 'Cartesian Product - 5 Preference',
                        '5PREF', f'{result_path}/IO/IO_PC_5PREF')
+data_io_pc_10pref = iograph(f"{base_path}/IO_PC_10PREF.csv", 'Cartesian Product - 10 Preference',
+                       '10PREF', f'{result_path}/IO/IO_PC_5PREF')
+
+data_io_diff_NT = iograph(f"{base_path}/IO_DIFF_NT.csv", 'Difference - Non Temporal', 'NT',
+                          f'{result_path}/IO/IO_DIFF_NT')
+data_io_diff_TSQL2 = iograph(f"{base_path}/IO_DIFF_TS.csv", 'Difference - TSQL2', 'TS',
+                             f'{result_path}/IO/IO_DIFF_TS')
+data_io_pc_NT = iograph(f"{base_path}/IO_PC_NT.csv", 'Cartesian Product - Non Temporal', 'NT',
+                        f'{result_path}/IO/IO_PC_NT')
+data_io_pc_TSQL2 = iograph(f"{base_path}/IO_PC_TS.csv", 'Cartesian Product - TSQL2', 'TS',
+                           f'{result_path}/IO/IO_PC_TS')
 
 frames = [data_io_diff_10, data_io_diff_50, data_io_diff_100, data_io_diff_1, data_io_diff_5, data_io_pc_10,
-          data_io_pc_50, data_io_pc_1, data_io_pc_5]
+          data_io_pc_50, data_io_pc_1, data_io_pc_5, data_io_pc_NT, data_io_pc_TSQL2, data_io_diff_NT,
+          data_io_diff_TSQL2, data_io_pc_10pref, data_io_diff_10pref]
 df_total_io = pd.concat(frames)
 df_total_io = df_total_io[df_total_io['input_tuples'] != 1000000]
 
@@ -394,16 +429,20 @@ data_structure_50 = process_files(f"{base_path}/50INT_TEST", '50INT')
 data_structure_100 = process_files(f"{base_path}/100INT_TEST", '100INT')
 data_structure_1pref = process_files(f"{base_path}/1PREF_TEST", '1PREF')
 data_structure_5pref = process_files(f"{base_path}/5PREF_TEST", '5PREF')
+data_structure_10pref = process_files(f"{base_path}/10PREF_TEST", '10PREF')
+data_structure_NoTime = process_files(f"{base_path}/NOTIME", 'NOTIME')
+data_structure_TSQL2 = process_files(f"{base_path}/TSQL2", 'TSQL2')
 
 plot_data(data_structure_10, '10 Interval', f'{result_path}/EXEC_10INT')
 plot_data(data_structure_50, '50 Interval', f'{result_path}/EXEC_50INT')
 plot_data(data_structure_100, '100 Interval', f'{result_path}/EXEC_100INT')
 plot_data(data_structure_1pref, '1 Preference', f'{result_path}/EXEC_1PREF')
 plot_data(data_structure_5pref, '5 Preference', f'{result_path}/EXEC_5PREF')
+plot_data(data_structure_10pref, '10 Preference', f'{result_path}/EXEC_10PREF')
 
 # COMPARISON EXECUTION TIME
-data_pref = [data_structure_1pref, data_structure_10, data_structure_5pref]
-data_interval = [data_structure_10, data_structure_50, data_structure_100]
+data_pref = [data_structure_1pref, data_structure_10, data_structure_5pref, data_structure_10pref, data_structure_NoTime, data_structure_TSQL2]
+data_interval = [data_structure_10, data_structure_50, data_structure_100, data_structure_NoTime, data_structure_TSQL2]
 plot_comparison(data_interval, label_interval, operation_types, versions, 'Interval Size', True,
                 f'{result_path}/EXEC_INT_INSCALE')
 plot_comparison(data_interval, label_interval, operation_types, versions, 'Interval Size', False,
