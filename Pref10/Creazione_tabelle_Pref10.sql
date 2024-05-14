@@ -136,18 +136,18 @@ END IF;
 		END IF;
 		
 		-- DURATA QUADRUPLA 1 PRIMA TABELLA
-		a = 1 *interval_mul ; b = 12 *interval_mul;
+		a = 1 *interval_mul ; b = 5 *interval_mul;
 		dmin = floor(random()*(b-a+1))+a;
-		a = 13 *interval_mul; b = 25*interval_mul;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r1.d1 = int4range(dmin, dmax, '[]');
 
 		
 		-- DURATA QUADRUPLA 1 SECONDA TABELLA
-		a = 1*interval_mul; b = 12*interval_mul;                
+		a = 1*interval_mul; b = 5*interval_mul;                
 		dmin = floor(random()*(b-a+1))+a;
-		a = 13 *interval_mul; b = 25*interval_mul;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r2.d1 = int4range(dmin, dmax, '[]');
@@ -155,31 +155,31 @@ END IF;
 
 		IF countrows < numrows*tempintersect THEN --le quadruple si devono intersecare
 		--QUADRUPLA 1 PRIMA TABELLA
-		a = 10 * interval_mul; b = 22 * interval_mul;          
+		a = 10 * interval_mul; b = 15 * interval_mul;          
 		smin = floor(random()*(b-a+1))+a; 
-		a = 22 * interval_mul; b = 35 * interval_mul;          
+		a = 16 * interval_mul; b = 20 * interval_mul;          
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
-		a = 12 * interval_mul ; b = 24 * interval_mul;
+		a = 12 * interval_mul ; b = 17 * interval_mul;
 		smin = floor(random()*(b-a+1))+a;
-		a = 25 * interval_mul ; b = 37 * interval_mul;
+		a = 18 * interval_mul ; b = 22 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 30 * interval_mul ; b = 42 * interval_mul;        
+		a = 30 * interval_mul ; b = 35 * interval_mul;        
 		smin = floor(random()*(b-a+1))+a; 
-		a = 43 * interval_mul ; b = 55 * interval_mul;        
+		a = 36 * interval_mul ; b = 40 * interval_mul;        
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 50 * interval_mul; b = 62 * interval_mul;           
+		a = 50 * interval_mul; b = 65 * interval_mul;           
 		smin = floor(random()*(b-a+1))+a;               
-		a = 63 * interval_mul; b = 75 * interval_mul;
+		a = 66 * interval_mul; b = 60 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
@@ -187,12 +187,12 @@ END IF;
 		
 		END IF;
 		-- QUADRUPLA 2 PRIMA TABELLA
-		a = 1 * interval_mul ; b = 2 * interval_mul;
-		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
+		a = 1 * interval_mul ; b = 1 * interval_mul;
+		smin = lower(r1.s1);
 		smax = abs ( upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 1 *interval_mul; b = 2 * interval_mul;
+		a = 1 *interval_mul; b = 1 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
-		dmax = upper(r1.d1) - (floor(random()*(b-a+1))+a);
+		dmax = upper(r1.d1);
 		IF smin > smax THEN
 		r1.s2 = int4range(smax,smin, '[]');		
 		ELSE
@@ -205,11 +205,11 @@ END IF;
 		r1.d2 = int4range(dmin,dmax, '[]');	
 		END IF;
 		-- QUADRUPLA 3 PRIMA TABELLA
-		a = 2 * interval_mul ; b = 3 * interval_mul;
+		a = 2 * interval_mul ; b = 2 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 2 * interval_mul; b = 3 * interval_mul;
-		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
+		smax = abs (upper(r1.s1));
+		a = 2 * interval_mul; b = 2 * interval_mul;
+		dmin = lower(r1.d1);
 		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
 		r1.s3 = int4range(lower(r1.s2),upper(r1.s2)-1, '[]');		
@@ -224,11 +224,11 @@ END IF;
 		END IF;
 
     -- QUADRUPLA 4 PRIMA TABELLA
-		a = 3 * interval_mul ; b = 4 * interval_mul;
+		a = 3 * interval_mul ; b = 3 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 3 * interval_mul; b = 4 * interval_mul;
-		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
+		smax = abs (upper(r1.s1));
+		a = 3 * interval_mul; b = 3 * interval_mul;
+		dmin = lower(r1.d1);
 		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
 		r1.s4 = int4range(lower(r1.s3),upper(r1.s3)-1, '[]');		
@@ -243,12 +243,12 @@ END IF;
 		END IF;
 
     -- QUADRUPLA 5 PRIMA TABELLA
-		a = 4 * interval_mul ; b = 5 * interval_mul;
-		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
+		a = 4 * interval_mul ; b = 4 * interval_mul;
+		smin = lower(r1.s1);
 		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 4 * interval_mul; b = 5 * interval_mul;
+		a = 4 * interval_mul; b = 4 * interval_mul;
 		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
+		dmax = abs (upper(r1.d1));
 		IF smin > smax THEN
 		r1.s5 = int4range(lower(r1.s4),upper(r1.s4)-1, '[]');		
 		ELSE 
@@ -264,11 +264,11 @@ END IF;
 
 
      -- QUADRUPLA 6 PRIMA TABELLA
-		a = 5 * interval_mul ; b = 6 * interval_mul;
+		a = 5 * interval_mul ; b = 5 * interval_mul;
 		smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-		a = 5 * interval_mul; b = 6 * interval_mul;
-		dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
+		smax = abs (upper(r1.s1));
+		a = 5 * interval_mul; b = 5 * interval_mul;
+		dmin = lower(r1.d1);
 		dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
 		r1.s6 = int4range(lower(r1.s5),upper(r1.s5)-1, '[]');		
@@ -284,12 +284,12 @@ END IF;
 
 
     -- QUADRUPLA 7 PRIMA TABELLA
-    a = 6 * interval_mul; b = 7 * interval_mul;
-    smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
+    a = 6 * interval_mul; b = 6 * interval_mul;
+    smin = lower(r1.s1);
     smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-    a = 6 * interval_mul; b = 7 * interval_mul;
+    a = 6 * interval_mul; b = 6 * interval_mul;
     dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
-    dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
+    dmax = abs (upper(r1.d1));
     IF smin > smax THEN
         r1.s7 = int4range(lower(r1.s6), upper(r1.s6)-1, '[]');
     ELSE 
@@ -304,11 +304,11 @@ END IF;
 
 
     -- QUADRUPLA 8 PRIMA TABELLA
-    a = 7 * interval_mul; b = 8 * interval_mul;
+    a = 7 * interval_mul; b = 7 * interval_mul;
     smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-    smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-    a = 7 * interval_mul; b = 8 * interval_mul;
-    dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
+    smax = abs (upper(r1.s1));
+    a = 7 * interval_mul; b = 7 * interval_mul;
+    dmin = lower(r1.d1);
     dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
     IF smin > smax THEN
         r1.s8 = int4range(lower(r1.s7), upper(r1.s7)-1, '[]');
@@ -323,12 +323,12 @@ END IF;
     END IF;
 
     -- QUADRUPLA 9 PRIMA TABELLA
-    a = 8 * interval_mul; b = 9 * interval_mul;
-    smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
+    a = 8 * interval_mul; b = 8 * interval_mul;
+    smin = lower(r1.s1);
     smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-    a = 8 * interval_mul; b = 9 * interval_mul;
+    a = 8 * interval_mul; b = 8 * interval_mul;
     dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
-    dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
+    dmax = abs (upper(r1.d1));
     IF smin > smax THEN
         r1.s9 = int4range(lower(r1.s8), upper(r1.s8)-1, '[]');
     ELSE 
@@ -342,11 +342,11 @@ END IF;
     END IF;
 
     -- QUADRUPLA 10 PRIMA TABELLA
-    a = 9 * interval_mul; b = 10 * interval_mul;
+    a = 9 * interval_mul; b = 9 * interval_mul;
     smin = lower(r1.s1) + (floor(random()*(b-a+1))+a);
-    smax = abs (upper(r1.s1) - (floor(random()*(b-a+1))+a));
-    a = 9 * interval_mul; b = 10 * interval_mul;
-    dmin = lower(r1.d1) + (floor(random()*(b-a+1))+a);
+    smax = abs (upper(r1.s1));
+    a = 9 * interval_mul; b = 9 * interval_mul;
+    dmin = lower(r1.d1);
     dmax = abs (upper(r1.d1) - (floor(random()*(b-a+1))+a));
     IF smin > smax THEN
         r1.s10 = int4range(lower(r1.s9), upper(r1.s9)-1, '[]');
@@ -362,12 +362,12 @@ END IF;
 
 	
 		-- QUADRUPLA 2 SECONDA TABELLA
-		a =  1* interval_mul; b = 2*interval_mul;
-		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
+		a =  1* interval_mul; b = 1*interval_mul;
+		smin = lower(r2.s1) ;
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 1 * interval_mul; b = 2 * interval_mul;
+		a = 1 * interval_mul; b = 1 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+		dmax = abs (upper(r2.d1));
 		IF smin > smax THEN
 		r2.s2 = int4range(lower(r2.s1),upper(r2.s1)-1, '[]');		
 		ELSE
@@ -381,11 +381,11 @@ END IF;
 		END IF;
 	
 		-- QUADRUPLA 3 SECONDA TABELLA
-		a = 2 * interval_mul ; b = 3 * interval_mul;
+		a = 2 * interval_mul ; b = 2 * interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 2 * interval_mul; b = 3 * interval_mul;
-		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
+		smax = abs (upper(r2.s1));
+		a = 2 * interval_mul; b = 2 * interval_mul;
+		dmin = lower(r2.d1);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
 		r2.s3 = int4range(lower(r2.s2),upper(r2.s2)-1, '[]');		
@@ -399,12 +399,12 @@ END IF;
 		END IF;
 
     -- QUADRUPLA 4 SECONDA TABELLA
-		a = 3 * interval_mul ; b = 4 * interval_mul;
-		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
+		a = 3 * interval_mul ; b = 3 * interval_mul;
+		smin = lower(r2.s1);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 3 * interval_mul; b = 4 * interval_mul;
+		a = 3 * interval_mul; b = 3 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+		dmax = abs (upper(r2.d1));
 		IF smin > smax THEN
 		r2.s4 = int4range(lower(r2.s3),upper(r2.s3)-1, '[]');		
 		ELSE
@@ -417,11 +417,11 @@ END IF;
 		END IF;
 
     -- QUADRUPLA 5 SECONDA TABELLA
-		a = 4 * interval_mul ; b = 5 * interval_mul;
+		a = 4 * interval_mul ; b = 4 * interval_mul;
 		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 4 * interval_mul; b = 5 * interval_mul;
-		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
+		smax = abs (upper(r2.s1));
+		a = 4 * interval_mul; b = 4 * interval_mul;
+		dmin = lower(r2.d1);
 		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
 		IF smin > smax THEN
 		r2.s5 = int4range(lower(r2.s4),upper(r2.s4)-1, '[]');		
@@ -435,12 +435,12 @@ END IF;
 		END IF;
 
      -- QUADRUPLA 6 SECONDA TABELLA
-		a = 5 * interval_mul ; b = 6 * interval_mul;
-		smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
+		a = 5 * interval_mul ; b = 5 * interval_mul;
+		smin = lower(r2.s1);
 		smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-		a = 5 * interval_mul; b = 6 * interval_mul;
+		a = 5 * interval_mul; b = 5 * interval_mul;
 		dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-		dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+		dmax = abs (upper(r2.d1));
 		IF smin > smax THEN
 		r2.s6 = int4range(lower(r2.s5),upper(r2.s5)-1, '[]');		
 		ELSE 
@@ -455,11 +455,11 @@ END IF;
 
 
     -- QUADRUPLA 7 SECONDA TABELLA
-    a = 6 * interval_mul; b = 7 * interval_mul;
+    a = 6 * interval_mul; b = 6 * interval_mul;
     smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-    smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-    a = 6 * interval_mul; b = 7 * interval_mul;
-    dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
+    smax = abs (upper(r2.s1));
+    a = 6 * interval_mul; b = 6 * interval_mul;
+    dmin = lower(r2.d1);
     dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
     IF smin > smax THEN
         r2.s7 = int4range(lower(r2.s6), upper(r2.s6)-1, '[]');
@@ -475,12 +475,12 @@ END IF;
 
 
     -- QUADRUPLA 8 SECONDA TABELLA
-    a = 7 * interval_mul; b = 8 * interval_mul;
-    smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
+    a = 7 * interval_mul; b = 7 * interval_mul;
+    smin = lower(r2.s1);
     smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-    a = 7 * interval_mul; b = 8 * interval_mul;
+    a = 7 * interval_mul; b = 7 * interval_mul;
     dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-    dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+    dmax = abs (upper(r2.d1));
     IF smin > smax THEN
         r2.s8 = int4range(lower(r2.s7), upper(r2.s7)-1, '[]');
     ELSE 
@@ -494,11 +494,11 @@ END IF;
     END IF;
 
     -- QUADRUPLA 9 SECONDA TABELLA
-    a = 8 * interval_mul; b = 9 * interval_mul;
+    a = 8 * interval_mul; b = 8 * interval_mul;
     smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
-    smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-    a = 8 * interval_mul; b = 9 * interval_mul;
-    dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
+    smax = abs (upper(r2.s1));
+    a = 8 * interval_mul; b = 8 * interval_mul;
+    dmin = lower(r2.d1);
     dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
     IF smin > smax THEN
         r2.s9 = int4range(lower(r2.s8), upper(r2.s8)-1, '[]');
@@ -513,12 +513,12 @@ END IF;
     END IF;
 
     -- QUADRUPLA 10 SECONDA TABELLA
-    a = 9 * interval_mul; b = 10 * interval_mul;
-    smin = lower(r2.s1) + (floor(random()*(b-a+1))+a);
+    a = 9 * interval_mul; b = 9 * interval_mul;
+    smin = lower(r2.s1);
     smax = abs (upper(r2.s1) - (floor(random()*(b-a+1))+a));
-    a = 9 * interval_mul; b = 10 * interval_mul;
+    a = 9 * interval_mul; b = 9 * interval_mul;
     dmin = lower(r2.d1) + (floor(random()*(b-a+1))+a);
-    dmax = abs (upper(r2.d1) - (floor(random()*(b-a+1))+a));
+    dmax = abs (upper(r2.d1));
     IF smin > smax THEN
         r2.s10 = int4range(lower(r2.s9), upper(r2.s9)-1, '[]');
     ELSE 

@@ -1,3 +1,6 @@
+/*CREATE INDEX idx_t7_t ON t7 USING GIST (T);
+CREATE INDEX idx_t8_t ON t8 USING GIST (T);*/
+
 CREATE OR REPLACE FUNCTION prodotto_cartesiano_TSQL2()
 RETURNS TABLE(
   Attr1_t1 varchar(150),

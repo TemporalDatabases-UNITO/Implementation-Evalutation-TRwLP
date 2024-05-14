@@ -107,18 +107,18 @@ END IF;
 		END IF;
 		
 		-- DURATA QUADRUPLA 1 PRIMA TABELLA
-		a = 1 *interval_mul ; b = 7 *interval_mul;
+		a = 1 *interval_mul ; b = 5 *interval_mul;
 		dmin = floor(random()*(b-a+1))+a;
-		a = 8 *interval_mul; b = 15*interval_mul;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r1.d1 = int4range(dmin, dmax, '[]');
 
 		
 		-- DURATA QUADRUPLA 1 SECONDA TABELLA
-		a = 1*interval_mul; b = 7*interval_mul;                
+		a = 1*interval_mul; b = 5*interval_mul;                
 		dmin = floor(random()*(b-a+1))+a;
-		a = 8 *interval_mul; b = 15*interval_mul;
+		a = 6 *interval_mul; b = 10*interval_mul;
 		dmax = floor(random()*(b-a+1))+a;
 		
 		r2.d1 = int4range(dmin, dmax, '[]');
@@ -128,29 +128,29 @@ END IF;
 		--QUADRUPLA 1 PRIMA TABELLA
 		a = 10 * interval_mul; b = 15 * interval_mul;          
 		smin = floor(random()*(b-a+1))+a; 
-		a = 16 * interval_mul; b = 25 * interval_mul;          
+		a = 16 * interval_mul; b = 20 * interval_mul;          
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');		
 	    -- QUADRUPLA 1 SECONDA TABELLA
 		a = 12 * interval_mul ; b = 18 * interval_mul;
 		smin = floor(random()*(b-a+1))+a;
-		a = 19 * interval_mul ; b = 27 * interval_mul;
+		a = 19 * interval_mul ; b = 22 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 		
 		ELSE --le quadruple non si devono intersecare
 		-- QUADRUPLA 1 PRIMA TABELLA
-		a = 30 * interval_mul ; b = 36 * interval_mul;        
+		a = 30 * interval_mul ; b = 35 * interval_mul;        
 		smin = floor(random()*(b-a+1))+a; 
-		a = 37 * interval_mul ; b = 45 * interval_mul;        
+		a = 36 * interval_mul ; b = 40 * interval_mul;        
 		smax = floor(random()*(b-a+1))+a;
 		r1.s1 = int4range(smin,smax, '[]');
 
 
 		-- QUADRUPLA 1 SECONDA TABELLA
-		a = 50 * interval_mul; b = 56 * interval_mul;           
+		a = 50 * interval_mul; b = 55 * interval_mul;           
 		smin = floor(random()*(b-a+1))+a;               
-		a = 57 * interval_mul; b = 65 * interval_mul;
+		a = 56 * interval_mul; b = 60 * interval_mul;
 		smax = floor(random()*(b-a+1))+a;
 		r2.s1 = int4range(smin,smax, '[]');
 	
